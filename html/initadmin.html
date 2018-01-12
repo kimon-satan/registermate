@@ -48,15 +48,12 @@
 
 			if(error == null)
 			{
-
-				$.ajax({
-					type: "POST",
-					url: "/newadmin",
-					data: ud,
-					success: function(res){ console.log(res)},
-					dataType: "json"
-				});
-
+				$.post(
+					"/createadmin", ud, function(res){console.log(res)}
+				)
+				.fail(function(res){
+					document.write(res.responseText);
+				})
 			}
 			else
 			{
