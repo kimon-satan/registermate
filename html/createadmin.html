@@ -1,0 +1,70 @@
+<html>
+<head>
+	<title>Registermate v3.0</title>
+
+	<script src="/libs/jquery-3.2.1.min.js"></script>
+	<!-- Bootstrap -->
+	<link rel="stylesheet" href="/libs/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/libs/bootstrap/css/bootstrap-theme.min.css">
+	<script src="/libs/bootstrap/js/bootstrap.js"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+</head>
+<body>
+	<div class="container-fluid" style="text-align: center">
+		<h1>Registermate</h1>
+		<h3>Create Admin User</h3>
+		<form>
+			<div class="form-group">
+				<label for="username">Username</label>
+				<input type="text" class="form-control" id="username" placeholder="admin">
+			</div>
+			<div class="form-group">
+				<label for="email">Email</label>
+				<input type="text" class="form-control" id="email" placeholder="admin">
+			</div>
+			<div class="form-group">
+				<label for="password">Password</label>
+				<input type="password" class="form-control" id="password1" placeholder="*****">
+			</div>
+			<div class="form-group">
+				<label for="password">Confirm Password</label>
+				<input type="password" class="form-control" id="password2" placeholder="*****">
+			</div>
+			<button class="btn btn-default" id="submit" type="submit">Submit</button>
+		</form>
+	</div>
+	<script src="/html/clientutils.js"></script>
+	<script>
+		$('#submit').on('click', function(e){
+
+			var ud = {};
+			ud.username = $('#username').val();
+			ud.email = $('#email').val();
+			ud.password1 = $('#password1').val();
+			ud.password2 = $('#password2').val();
+			e.preventDefault();
+			var error = validateUserData(ud);
+
+			if(error == null)
+			{
+
+				$.ajax({
+					type: "POST",
+					url: "/newadmin",
+					data: ud,
+					success: function(res){ console.log(res)},
+					dataType: "json"
+				});
+
+			}
+			else
+			{
+					alert(error);
+			}
+
+		})
+
+	</script>
+</body>
+</html>
