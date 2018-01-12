@@ -31,22 +31,32 @@ app.get('/', (req, res) => res.sendFile(__dirname + '/html/student.html'))
 app.get('/student', (req, res) => res.sendFile(__dirname + '/html/student.html'))
 app.get('/teacher', (req, res) =>
 	{
-		if (req.session.username & req.session.password != null) {
+		if (req.session.username != null && req.session.password != null)
+		{
 				// Already logged in.
+				req.session.menu = "teacher";
 				res.sendFile(__dirname + '/html/teacher-front.html')
-		 } else {
-				res.sendFile(__dirname + '/html/login.html')
+		}
+		else
+		{
+			req.session.menu = "teacher";
+			res.sendFile(__dirname + '/html/login.html');
 		 }
 	}
 )
 app.get('/admin' , (req, res) =>
 	{
-		if (req.session.username != null && req.session.password != null) {
+		if (req.session.username != null && req.session.password != null)
+		{
 				// Already logged in.
+				req.session.menu = "admin";
 				res.sendFile(__dirname + '/html/admin-front.html')
-		 } else {
-				res.sendFile(__dirname + '/html/login.html')
-		 }
+		}
+		else
+		{
+			req.session.menu = "admin";
+			res.sendFile(__dirname + '/html/login.html')
+		}
 	}
 )
 
@@ -58,7 +68,8 @@ app.get('/initadmin', (req, res) =>{
 			{
 				if(doc == null)
 				{
-					res.sendFile(__dirname + '/html/initadmin.html')
+					req.session.menu = "admin";
+					res.sendFile(__dirname + '/html/initadmin.html');
 				}
 				else
 				{
@@ -89,7 +100,7 @@ app.post('/createadmin', (req, res) =>
 			password: req.session.password
 		}
 
-		helpers.authenticateUser(auth, users)
+		helpers.authenticateUser(auth, users, true)
 
 		.then(function(data){
 
@@ -101,8 +112,10 @@ app.post('/createadmin', (req, res) =>
 					{
 						if(doc == null)
 						{
-							users.insert(ud)
+							users.insert(ud);
 							res.status(200).send('Admin created');
+							//TODO login and redirect ... if not logged in
+
 						}
 						else
 						{
@@ -113,10 +126,9 @@ app.post('/createadmin', (req, res) =>
 			}
 			else
 			{
-				res.status(400).send('Authentication failed');
+				res.status(400).send(data.info);
 			}
 		})
-
 	})
 
 })
@@ -126,12 +138,19 @@ app.post('/login', (req, res) =>
 		if(req.session.username & req.session.password != null)
 		{
 			//logged in
-			res.redirect('/html/teacher-front.html');
+			if(req.session.menu == "admin")
+			{
+				res.redirect('/html/admin-front.html');
+			}
+			else
+			{
+				res.redirect('/html/teacher-front.html');
+			}
 		}
 		else
 		{
 			//check database
-			helpers.authenticateUser(req.body, users)
+			helpers.authenticateUser(req.body, users, false)
 
 			.then((data)=>{
 				if(data.valid)
@@ -139,11 +158,18 @@ app.post('/login', (req, res) =>
 					req.session.username = req.body.username;
 					req.session.password = req.body.password;
 					res.type('.html');
-					res.redirect('/html/teacher-front.html');
+					if(req.session.menu == "admin")
+					{
+						res.redirect('/html/admin-front.html');
+					}
+					else
+					{
+						res.redirect('/html/teacher-front.html');
+					}
 				}
 				else
 				{
-					res.status(400).send('Username or password is incorrect');
+					res.status(400).send(data.info);
 				}
 			})
 		}
@@ -151,8 +177,18 @@ app.post('/login', (req, res) =>
 )
 
 app.get('/logout', (req, res) => {
+	var m = req.session.menu;
 	req.session = null;
-	res.redirect('/html/login.html');
+
+	if(m == "admin")
+	{
+		res.redirect('/admin');
+	}
+	else
+	{
+		res.redirect('/teacher');
+	}
+
 })
 
 

@@ -11,7 +11,7 @@ exports.saltAndHash = function(pw)
 	return p;
 }
 
-exports.authenticateUser = function(ud,db)
+exports.authenticateUser = function(ud,db,requireAdmin)
 {
 
 	var p = new Promise(function(resolve, reject){
@@ -25,7 +25,14 @@ exports.authenticateUser = function(ud,db)
 
 						if(verified)
 						{
-							resolve({valid: true, info:"User found"});
+							if(!requireAdmin || doc.role == "admin")
+							{
+								resolve({valid: true, info:"User authenicated"});
+							}
+							else
+							{
+								resolve({valid: false, info:"User is not admin"});
+							}
 						}
 						else
 						{

@@ -49,10 +49,12 @@
 			if(error == null)
 			{
 				$.post(
-					"/createadmin", ud, function(res){console.log(res)}
+					"/createadmin", ud, function(res){
+						console.log(res);
+					}
 				)
 				.fail(function(res){
-					document.write(res.responseText);
+					alert(res.responseText);
 				})
 			}
 			else
