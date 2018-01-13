@@ -5,9 +5,11 @@ const helpers = require('./serverHelpers.js')
 const db = monk("localhost:27017/registermate");
 const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
+const hbs = require('hbs');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
 
 app.use(cookieSession({
 	name: 'session',
@@ -24,18 +26,21 @@ db.then(() => {
 const users = db.get('users')
 const students = db.get('students')
 
+app.set('view engine', 'hbs');
+hbs.registerPartials(__dirname + '/templates');
+
 app.use("/libs",express.static(__dirname + '/libs'));
 app.use("/html",express.static(__dirname + '/html'));
 
-app.get('/', (req, res) => res.sendFile(__dirname + '/html/student.html'))
-app.get('/student', (req, res) => res.sendFile(__dirname + '/html/student.html'))
+app.get('/', (req, res) => res.render(__dirname + '/templates/student.hbs'))
+app.get('/student', (req, res) => res.render(__dirname + '/templates/student.hbs'))
 app.get('/teacher', (req, res) =>
 	{
 		if (req.session.username != null && req.session.password != null)
 		{
 				// Already logged in.
 				req.session.menu = "teacher";
-				res.sendFile(__dirname + '/html/teacher-front.html')
+				res.render(__dirname + '/templates/teacherMenu.hbs');
 		}
 		else
 		{
@@ -50,7 +55,7 @@ app.get('/admin' , (req, res) =>
 		{
 				// Already logged in.
 				req.session.menu = "admin";
-				res.sendFile(__dirname + '/html/admin-front.html')
+				res.render(__dirname + '/templates/adminMenu.hbs');
 		}
 		else
 		{
@@ -68,6 +73,9 @@ app.get('/initadmin', (req, res) =>{
 			{
 				if(doc == null)
 				{
+					//clear any existing user data
+					req.session.username = null;
+					req.session.password = null;
 					req.session.menu = "admin";
 					res.sendFile(__dirname + '/html/initadmin.html');
 				}
@@ -113,9 +121,18 @@ app.post('/createadmin', (req, res) =>
 						if(doc == null)
 						{
 							users.insert(ud);
-							res.status(200).send('Admin created');
-							//TODO login and redirect ... if not logged in
-
+							if(!req.session.username && !req.session.password)
+							{
+								//login and redirect ... if not logged in
+								req.session.username = ud.username;
+								req.session.password = ud.password;
+								res.type('.html');
+								res.redirect('/html/admin-front.html');
+							}
+							else
+							{
+								res.status(200).send('Admin created');
+							}
 						}
 						else
 						{
@@ -190,7 +207,6 @@ app.get('/logout', (req, res) => {
 	}
 
 })
-
 
 
 app.listen(3000, () => console.log('Example app listening on port 3000!'))

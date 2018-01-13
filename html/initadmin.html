@@ -49,8 +49,9 @@
 			if(error == null)
 			{
 				$.post(
-					"/createadmin", ud, function(res){
-						console.log(res);
+					"/createadmin", ud, function(res)
+					{
+						document.write(res);
 					}
 				)
 				.fail(function(res){
@@ -63,7 +64,6 @@
 			}
 
 		})
-
 	</script>
 </body>
 </html>
