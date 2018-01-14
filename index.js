@@ -30,139 +30,130 @@ app.set('view engine', 'hbs');
 hbs.registerPartials(__dirname + '/templates');
 
 app.use("/libs",express.static(__dirname + '/libs'));
-app.use("/html",express.static(__dirname + '/html'));
+app.use("/clientscripts",express.static(__dirname + '/clientscripts'));
 
-app.get('/', (req, res) => res.render(__dirname + '/templates/student.hbs'))
+app.get('/', (req, res) => res.redirect('/student'))
 app.get('/student', (req, res) => res.render(__dirname + '/templates/student.hbs'))
 app.get('/teacher', (req, res) =>
 	{
-		if (req.session.username != null && req.session.password != null)
-		{
-				// Already logged in.
-				req.session.menu = "teacher";
-				res.render(__dirname + '/templates/teacherMenu.hbs');
-		}
-		else
-		{
-			req.session.menu = "teacher";
-			res.sendFile(__dirname + '/html/login.html');
-		 }
-	}
-)
-app.get('/admin' , (req, res) =>
-	{
-		if (req.session.username != null && req.session.password != null)
-		{
-				// Already logged in.
-				req.session.menu = "admin";
-				res.render(__dirname + '/templates/adminMenu.hbs');
-		}
-		else
-		{
-			req.session.menu = "admin";
-			res.sendFile(__dirname + '/html/login.html')
-		}
-	}
-)
 
-app.get('/initadmin', (req, res) =>{
-	{
-		users.findOne({})
-		.then(
-			(doc) =>
-			{
-				if(doc == null)
+		if (req.session.username != null && req.session.password != null)
+		{
+				// Already logged in.
+				if(req.session.role == "teacher")
 				{
-					//clear any existing user data
-					req.session.username = null;
-					req.session.password = null;
-					req.session.menu = "admin";
-					res.sendFile(__dirname + '/html/initadmin.html');
+					res.render(__dirname + '/templates/teacherMenu.hbs');
 				}
 				else
 				{
-					res.status(400).send('Admin already exists');
+					res.render(__dirname + '/templates/adminMenu.hbs');
 				}
-			}
-		)
+		}
+		else
+		{
+			res.sendFile(__dirname + '/clientscripts/login.html');
+		}
 	}
+)
+
+app.get('/registeraccount', (req, res) =>{
+	res.render(__dirname + '/templates/registerAccount.hbs');
 })
 
-app.post('/createadmin', (req, res) =>
+app.post('/createaccount', (req, res) =>
 {
 
+	var ud;
 	helpers.saltAndHash(req.body.password1)
 
 	.then(function(data)
 	{
-
-		var ud = {
+		ud = {
 			username: req.body.username,
+			password: req.body.password1,
 			hash: data,
-			role: "admin",
+			role: "teacher",
 			email: req.body.email
-		};
-
-		var auth = {
-			username: req.session.username,
-			password: req.session.password
 		}
 
-		helpers.authenticateUser(auth, users, true)
+		console.log(ud);
 
-		.then(function(data){
+		return users.count()
 
-			if(data.valid)
+		// users.findOne({username: req.body.username})
+		//
+	})
+
+	.then((doc) => {
+
+		console.log(doc);
+		//first user becomes an admin automatically
+		if(doc == 0)
+		{
+			ud.role = "admin";
+		}
+
+		//check for existing username
+		return users.findOne({username: req.body.username});
+	})
+
+	.then((doc) =>
+	{
+		console.log(doc);
+
+		if(doc == null)
+		{
+			users.insert(ud);
+			if(!req.session.username && !req.session.password)
 			{
-				users.findOne({username: req.body.username})
-				.then(
-					(doc) =>
-					{
-						if(doc == null)
-						{
-							users.insert(ud);
-							if(!req.session.username && !req.session.password)
-							{
-								//login and redirect ... if not logged in
-								req.session.username = ud.username;
-								req.session.password = ud.password;
-								res.type('.html');
-								res.redirect('/html/admin-front.html');
-							}
-							else
-							{
-								res.status(200).send('Admin created');
-							}
-						}
-						else
-						{
-							res.status(400).send('Admin already exists');
-						}
-					}
-				)
+				//if not logged in then login and redirect ...
+				req.session.username = ud.username;
+				req.session.password = ud.password;
+				req.session.role = ud.role;
+				res.redirect('/teacher');
 			}
 			else
 			{
-				res.status(400).send(data.info);
+				res.status(200).send('Account created');
 			}
-		})
+		}
+		else
+		{
+			res.status(400).send('A user of that name already exists');
+		}
+	})
+})
+
+app.post('/makeadmin', (req, res) =>{
+
+	//A valid admin user can make another user into an admin
+
+	var auth = {
+		username: req.session.username,
+		password: req.session.password
+	}
+
+	helpers.authenticateUser(auth, users, true)
+
+	.then(function(data){
+
+		if(data.valid)
+		{
+			//change user role here
+		}
+		else
+		{
+			res.status(400).send(data.info);
+		}
 	})
 
 })
 
 app.post('/login', (req, res) =>
 	{
-		if(req.session.username & req.session.password != null)
+		if(req.session.username != null && req.session.password != null)
 		{
-			//logged in
-			if(req.session.menu == "admin")
-			{
-				res.redirect('/html/admin-front.html');
-			}
-			else
-			{
-				res.redirect('/html/teacher-front.html');
-			}
+			res.redirect("/teacher")
 		}
 		else
 		{
@@ -174,15 +165,7 @@ app.post('/login', (req, res) =>
 				{
 					req.session.username = req.body.username;
 					req.session.password = req.body.password;
-					res.type('.html');
-					if(req.session.menu == "admin")
-					{
-						res.redirect('/html/admin-front.html');
-					}
-					else
-					{
-						res.redirect('/html/teacher-front.html');
-					}
+					res.redirect('/teacher');
 				}
 				else
 				{
@@ -194,18 +177,9 @@ app.post('/login', (req, res) =>
 )
 
 app.get('/logout', (req, res) => {
-	var m = req.session.menu;
+	var m = req.session.role;
 	req.session = null;
-
-	if(m == "admin")
-	{
-		res.redirect('/admin');
-	}
-	else
-	{
-		res.redirect('/teacher');
-	}
-
+	res.redirect('/teacher');
 })
 
 
