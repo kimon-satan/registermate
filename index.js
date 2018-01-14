@@ -6,10 +6,10 @@ const db = monk("localhost:27017/registermate");
 const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
 const hbs = require('hbs');
+const nodemailer = require('nodemailer');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
 
 app.use(cookieSession({
 	name: 'session',
@@ -28,6 +28,22 @@ const students = db.get('students')
 
 app.set('view engine', 'hbs');
 hbs.registerPartials(__dirname + '/templates');
+
+var transporter;
+
+nodemailer.createTestAccount((err, account) => {
+
+	// init reusable transporter object using the default SMTP transport
+	transporter = nodemailer.createTransport({
+			host: 'smtp.ethereal.email',
+			port: 587,
+			secure: false, // true for 465, false for other ports
+			auth: {
+					user: account.user, // generated ethereal user
+					pass: account.pass  // generated ethereal password
+			}
+	});
+})
 
 app.use("/libs",express.static(__dirname + '/libs'));
 app.use("/clientscripts",express.static(__dirname + '/clientscripts'));
@@ -51,13 +67,17 @@ app.get('/teacher', (req, res) =>
 		}
 		else
 		{
-			res.sendFile(__dirname + '/clientscripts/login.html');
+			res.render(__dirname + '/templates/login.hbs');
 		}
 	}
 )
 
 app.get('/registeraccount', (req, res) =>{
 	res.render(__dirname + '/templates/registerAccount.hbs');
+})
+
+app.get('/requestreset', (req, res) =>{
+	res.render(__dirname + '/templates/requestReset.hbs');
 })
 
 app.post('/createaccount', (req, res) =>
@@ -76,17 +96,12 @@ app.post('/createaccount', (req, res) =>
 			email: req.body.email
 		}
 
-		console.log(ud);
-
 		return users.count()
 
-		// users.findOne({username: req.body.username})
-		//
 	})
 
 	.then((doc) => {
 
-		console.log(doc);
 		//first user becomes an admin automatically
 		if(doc == 0)
 		{
@@ -99,7 +114,6 @@ app.post('/createaccount', (req, res) =>
 
 	.then((doc) =>
 	{
-		console.log(doc);
 
 		if(doc == null)
 		{
@@ -177,9 +191,61 @@ app.post('/login', (req, res) =>
 )
 
 app.get('/logout', (req, res) => {
-	var m = req.session.role;
 	req.session = null;
 	res.redirect('/teacher');
+})
+
+app.post('/emailreset', (req, res) =>
+{
+	users.findOne({username: req.body.username})
+	.then((doc) =>{
+
+		if(doc == null)
+		{
+			return Promise.reject("User not found");
+		}
+		else
+		{
+			//send the email
+
+			var mail =
+			{
+				from: '"noreply" <noreply@registermate.doc.gold.ac.uk>', // sender address
+				to: 'bar@blurdybloop.com', // list of receivers
+				subject: 'Registermate', // Subject line
+				text: 'password reset', // plain text body
+				html: '<b>Message text</b>' // html body
+			};
+
+			// send mail with defined transport object
+			return transporter.sendMail(mail, (error, info) =>
+			{
+				if (error)
+				{
+					return console.log(error);
+				}
+				console.log('Message sent: %s', info.messageId);
+				// Preview only available when sending through an Ethereal account
+				console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+			});
+
+
+		}
+	})
+	.then((doc)=>{
+		res.send("A email has been sent to your registered address.")
+	})
+	.catch((doc) => {
+		console.log(doc);
+		res.send(doc)
+	})
+
+})
+
+app.get('/reset/:token', (req, res) => {
+
+	var token = req.params.token;
+
 })
 
 

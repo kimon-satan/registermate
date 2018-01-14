@@ -3,24 +3,37 @@
 <body>
 	<div class="container-fluid" style="text-align: center">
 		<h1>Registermate</h1>
-		<h3>Login</h3>
+		<h3>Reset your password</h3>
+		<p>Enter your username below and we will email you with a reset link.</p>
 		<form>
 			<div class="form-group">
 				<label for="username">Username</label>
 				<input type="text" class="form-control" id="username" placeholder="admin">
 			</div>
-			<div class="form-group">
-				<label for="password">Password</label>
-				<input type="password" class="form-control" id="password" placeholder="*****">
-			</div>
 
 			<button class="btn btn-default" id="submit" type="submit">Submit</button>
 
 		</form>
-			<a href="/registeraccount">register new account</a>
-			<br>
-			<a href="/requestreset">forgot password ?</a>
+
 	</div>
-	<script src="/clientscripts/login.js"></script>
+	<script>
+		$('#submit').on('click', function(e)
+		{
+
+			var ud = {};
+			ud.username = $('#username').val();
+
+			e.preventDefault();
+
+			var req = $.post(
+				"/emailreset", ud, function(res)
+				{
+					//console.log(res);
+					alert(res);
+				}
+			)
+
+		})
+	</script>
 </body>
 </html>
