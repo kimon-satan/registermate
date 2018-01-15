@@ -27,7 +27,7 @@ exports.authenticateUser = function(ud,db,requireAdmin)
 						{
 							if(!requireAdmin || doc.role == "admin")
 							{
-								resolve({valid: true, info:"User authenicated"});
+								resolve({valid: true, info:"User authenicated", role: doc.role});
 							}
 							else
 							{
@@ -70,10 +70,12 @@ exports.authenticateUser = function(ud,db,requireAdmin)
 
 exports.generateToken = function()
 {
-	var buf = new Buffer(16);
-	for (var i = 0; i < buf.length; i++) {
-			buf[i] = Math.floor(Math.random() * 256);
+	var chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	var id = "";
+	for(var i = 0; i < 24; i++)
+	{
+		let j = Math.floor(Math.random() * chars.length);
+		id += chars[j];
 	}
-	var id = buf.toString('base64');
 	return id;
 }

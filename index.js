@@ -33,16 +33,24 @@ var transporter;
 
 nodemailer.createTestAccount((err, account) => {
 
-	// init reusable transporter object using the default SMTP transport
-	transporter = nodemailer.createTransport({
-			host: 'smtp.ethereal.email',
-			port: 587,
-			secure: false, // true for 465, false for other ports
-			auth: {
-					user: account.user, // generated ethereal user
-					pass: account.pass  // generated ethereal password
-			}
-	});
+	if(err)
+	{
+		console.log(err);
+		return Promise.reject();
+	}
+	else
+	{
+		// init reusable transporter object using the default SMTP transport
+		transporter = nodemailer.createTransport({
+				host: 'smtp.ethereal.email',
+				port: 587,
+				secure: false, // true for 465, false for other ports
+				auth: {
+						user: account.user, // generated ethereal user
+						pass: account.pass  // generated ethereal password
+				}
+		});
+	}
 })
 
 app.use("/libs",express.static(__dirname + '/libs'));
@@ -90,7 +98,6 @@ app.post('/createaccount', (req, res) =>
 	{
 		ud = {
 			username: req.body.username,
-			password: req.body.password1,
 			hash: data,
 			role: "teacher",
 			email: req.body.email
@@ -122,7 +129,7 @@ app.post('/createaccount', (req, res) =>
 			{
 				//if not logged in then login and redirect ...
 				req.session.username = ud.username;
-				req.session.password = ud.password;
+				req.session.password = req.body.password1;
 				req.session.role = ud.role;
 				res.redirect('/teacher');
 			}
@@ -175,10 +182,12 @@ app.post('/login', (req, res) =>
 			helpers.authenticateUser(req.body, users, false)
 
 			.then((data)=>{
+
 				if(data.valid)
 				{
 					req.session.username = req.body.username;
 					req.session.password = req.body.password;
+					req.session.role = data.role;
 					res.redirect('/teacher');
 				}
 				else
@@ -206,34 +215,59 @@ app.post('/emailreset', (req, res) =>
 		}
 		else
 		{
-			//send the email
+			//generate the token and store it in the DB for the user
+			var token = helpers.generateToken();
+			var d = new Date();
+			var expiretime = d.getTime() + 1000 * 60 * 30; //30 minutes from now
+			users.update({username: doc.username},{$set: {token: token, expiretime: expiretime}});
 
-			var mail =
+			res.render(__dirname + '/templates/resetMessage.hbs',
+			{ username: doc.username, site_url: "localhost:3000", token: token },
+			function(err, html)
 			{
-				from: '"noreply" <noreply@registermate.doc.gold.ac.uk>', // sender address
-				to: 'bar@blurdybloop.com', // list of receivers
-				subject: 'Registermate', // Subject line
-				text: 'password reset', // plain text body
-				html: '<b>Message text</b>' // html body
-			};
 
-			// send mail with defined transport object
-			return transporter.sendMail(mail, (error, info) =>
-			{
-				if (error)
+				if(err)
 				{
-					return console.log(error);
+					console.error(err);
 				}
-				console.log('Message sent: %s', info.messageId);
-				// Preview only available when sending through an Ethereal account
-				console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+				else
+				{
+					var mail =
+					{
+						from: '"noreply" <noreply@registermate.doc.gold.ac.uk>', // sender address
+						to: doc.email, // list of receivers
+						subject: 'Registermate', // Subject line
+						text: 'password reset', // plain text body
+						html: html // html body
+					};
+
+					if(transporter)
+					{
+						// send mail with defined transport object
+						transporter.sendMail(mail, (error, info) =>
+						{
+							if (error)
+							{
+								console.error(error);
+							}
+
+							console.log('Message sent: %s', info.messageId);
+							// Preview only available when sending through an Ethereal account
+							console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+
+							res.send("An email has been sent to your registered address.");
+						});
+					}
+					else
+					{
+						console.error("Nodemailer was not initialised. Here's what you would have sent..." + mail);
+					}
+
+				}
+
 			});
 
-
 		}
-	})
-	.then((doc)=>{
-		res.send("A email has been sent to your registered address.")
 	})
 	.catch((doc) => {
 		console.log(doc);
@@ -242,10 +276,56 @@ app.post('/emailreset', (req, res) =>
 
 })
 
-app.get('/reset/:token', (req, res) => {
+app.get('/reset/:username/:token', (req, res) => {
 
 	var token = req.params.token;
+	var username = req.params.username;
+	req.session.username = username;
+	req.session.token = token;
+	res.render(__dirname + '/templates/resetPassword.hbs');
 
+})
+
+app.post('/reset', (req, res) => {
+
+	var token = req.session.token;
+	var username = req.session.username;
+
+	users.findOne({username: username, token: token})
+
+	.then((doc) =>
+	{
+		if(doc == null)
+		{
+			return Promise.reject("Invalid token");
+		}
+		else
+		{
+			var d = new Date();
+			var ctime = d.getTime();
+			if(ctime > doc.expiretime)
+			{
+				return Promise.reject("Reset token has expired");
+			}
+			else
+			{
+				return helpers.saltAndHash(req.body.password1)
+			}
+		}
+	})
+	.then((data)=>{
+		//update the password and destroy the token
+		req.session = null;
+		return users.update({username: username},{$set: {hash: data, token: ""}})
+	})
+	.then((data)=>{
+		console.log("success");
+		res.send("Your password has been succesfully updated.");
+	})
+	.catch((doc) =>{
+		console.log("fail", doc);
+		res.status(400).send(doc);
+	})
 })
 
 

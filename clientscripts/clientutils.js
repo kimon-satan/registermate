@@ -8,16 +8,23 @@ function validateUserData(ud)
 		return error;
 	}
 
-	if(ud.password1.length < 8)
-	{
-		error = "Password must be 8 characters or more";
-		return error;
-	}
-
 	var pat = /^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/
 	if(!pat.test(ud.email))
 	{
 		error = "Invalid email address";
+		return error;
+	}
+
+	error = validatePassword(ud);
+
+	return error;
+}
+
+function validatePassword(ud)
+{
+	if(ud.password1.length < 8)
+	{
+		error = "Password must be 8 characters or more";
 		return error;
 	}
 

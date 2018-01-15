@@ -19,7 +19,7 @@
 	<script>
 		$('#submit').on('click', function(e)
 		{
-
+			$('#submit').attr("disabled", "disabled");
 			var ud = {};
 			ud.username = $('#username').val();
 
@@ -28,8 +28,8 @@
 			var req = $.post(
 				"/emailreset", ud, function(res)
 				{
-					//console.log(res);
 					alert(res);
+					$('#submit').removeAttr("disabled");
 				}
 			)
 
