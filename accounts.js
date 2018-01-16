@@ -25,6 +25,7 @@ function Accounts(app)
 				surname:req.body.surname,
 				hash: data,
 				role: "teacher",
+				sessions: [],
 				email: req.body.email
 			}
 
@@ -412,9 +413,8 @@ Accounts.prototype.generateFakeAccounts = function(numUsers)
 			var parsed = [];
 			for(var i = numOld; i < numOld + numNew; i++)
 			{
-				console.log(i);
 				let d = temp[i].split(",");
-				let ud = {username: d[3], email: d[2], firstname: d[1], surname: d[0], hash: "", role: "teacher"};
+				let ud = {username: d[3], email: d[2], firstname: d[1], surname: d[0], hash: "", role: "teacher", sessions: []};
 				parsed.push(ud);
 			}
 			users.insert(parsed);

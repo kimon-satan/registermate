@@ -3,39 +3,118 @@ const monk = require('monk');
 const db = monk("localhost:27017/registermate");
 const users = db.get('users');
 const sessions = db.get('sessions');
+const departmentData = db.get('departmentData')
 const fs = require('fs');
-
-var departmentData;
+var departmentList = [];
 
 //TODO
 //Sessions DB
 /*
 {
 department: ,
-module: ,
+modules: [],
 sessionname: ,
 term: ,
 students: [],
+teachers: [],
 sessionarray: [date, date, blank, blank, blank, etc... ]
 }
 */
 
 function SessionManager(app)
 {
-
 	//LOAD THE HARDCODED DEPARTMENT DATA
 	fs.readFile(__dirname + "/config/departmentinfo.json",
-	function(err, data){
+	function(err, data)
+	{
 		//TODO insert module titles into DB if they don't exist ?
-		departmentData = JSON.parse(data);
+		var d = JSON.parse(data);
+		departmentList = Object.keys(d);
+
+		//iterate through departments
+		Object.keys(d).forEach(function(item)
+		{
+			d[item].modules.forEach(function(module)
+			{
+				departmentData.findOne({department: item, code: module.code, title: module.title})
+				.then((doc)=>{
+					if(doc == null)
+					{
+						//insert modules if necessary
+						departmentData.insert({department: item, code: module.code, title: module.title});
+					}
+				})
+			});
+
+		});
 	})
 
 	app.get('/departmentlist', (req,res) =>
 	{
-		var l = Object.keys(departmentData);
-		l.sort();
-	 	res.send(l);
+		res.send(departmentList);
 	});
+
+	app.get('/modulelist', (req,res) =>
+	{
+		departmentData.find(req.query,{sort: {code: 1}, fields: {title: 1, code: 1}})
+		.then((doc) => {
+			res.send(doc);
+		})
+
+	});
+
+	app.post('/createsession', (req,res) =>{
+
+
+		var auth = {
+			username: req.session.username,
+			password: req.session.password
+		}
+
+		helpers.authenticateUser(auth, users, false)
+
+		.then(function(data){
+
+			if(data.valid)
+			{
+				//check the session doesn't already exist
+				return sessions.findOne(req.body);
+			}
+			else
+			{
+				return Promise.reject(data.info);
+			}
+		})
+
+		.then((doc)=>{
+
+			if(doc == null)
+			{
+				//okay we can make the module
+				var s = req.body;
+				s.teachers = [req.session.username];
+				return sessions.insert(s);
+				//add the session to the teacher
+
+
+			}
+			else
+			{
+				return Promise.reject("Error: session already exists");
+			}
+		})
+
+		.then((doc)=>{
+			//add the session id to the teacher
+			users.update({username: req.session.username},{$addToSet: {sessions: doc._id}});
+			res.send("new session created");
+		})
+
+		.catch((err)=>{
+			res.status(400).send(err);
+		})
+
+	})
 }
 
 module.exports = SessionManager;

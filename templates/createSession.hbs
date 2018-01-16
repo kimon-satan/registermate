@@ -6,42 +6,60 @@
 		<h1>Registermate</h1>
 		<h3>Create a new session</h3>
 
+
+
 		<div class="form-group form-inline" style="margin-top: 50px">
+
+			<div style="margin-top: 20px">
+				 <label for="newSession">Create a new session name</label>
+				 <input id="newSession" class="form-control" placeholder="Lecture">
+			</div>
+
+			<div style="margin-top: 20px">
+				<label for="termInput">Select a term</label>
+				<select class="form-control" id="termInput">
+					<option value="none">none</option>
+					<option value="term1">term 1</option>
+					<option value="term2">term 2</option>
+					<option value="term3">term 3</option>
+				</select>
+			</div>
+
 			<div style="margin-top: 20px">
 				 <label for="departmentInput">Select your department</label>
 				 <select class="form-control" id="departmentInput">
 					 <option value="none">none</option>
 				 </select>
 			</div>
-			<div style="margin-top: 20px">
-				<label for="newCourse">Create a new module name</label>
-				<input id="newCourse" class="form-control" placeholder="Intro to Computing">
 
-				<label for="courseInput">or use an existing module name</label>
-				<select class="form-control" id="courseInput">
-						<option value="none">none</option>
-				</select>
+			<div class="panel panel-default" style="margin-top: 20px">
+				<div class="panel-heading">Add modules</div>
+				<div class="panel-body">
+				<div style="margin-top: 20px">
+					<label for="moduleInput">existing modules</label>
+					<select class="form-control" id="moduleInput">
+							<option value="none">none</option>
+					</select>
+					<button id="addExisting" class="btn btn-info">add to session</button>
+				</div>
+				<div style="margin-top: 20px">
+					<label for="newModule">custom module name</label>
+					<input id="newModule" class="form-control" placeholder="Revision Sessions">
+					<button id="addCustom" class="btn btn-info">add to session</button>
+				</div>
+
+
+				<div style="margin-top: 30px">
+					<b>Session modules:</b>
+					<ul id="sessionModules">
+					</ul>
+				</div>
+				</div>
 
 			</div>
-			<div style="margin-top: 20px">
-				 <label for="newSession">Create a new session name</label>
-				 <input id="newSession" class="form-control" value="Lecture">
 
-			</div>
-			<div style="margin-top: 20px">
-				 <label for="newSession">Select a term</label>
-				<select class="form-control" id="termInput">
-					<option value="none">none</option>
-					<option value="term1">term 1</option>
-					<option value="term2">term 2</option>
-					<option value="term3">term 3</option>
-
-				 </select>
-
-			</div>
-
-			<div style="margin-top: 30px">
-				<input class="btn btn-danger" id="createSession" type="button" value="Create new session">
+			<div style="margin-top: 30px; text-align: center">
+				<input class="btn btn-danger btn-lg" id="createSession" type="button" value="Create new session">
 			</div>
 		</div>
 	</div>
