@@ -6,6 +6,8 @@ $('#submit').on('click', function(e){
 	ud.email = $('#email').val();
 	ud.password1 = $('#password1').val();
 	ud.password2 = $('#password2').val();
+	ud.firstname = $('#firstname').val();
+	ud.surname = $('#surname').val();
 	e.preventDefault();
 	var error = validateUserData(ud);
 

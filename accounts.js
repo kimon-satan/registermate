@@ -2,6 +2,7 @@ const helpers = require('./serverHelpers.js');
 const monk = require('monk');
 const db = monk("localhost:27017/registermate");
 const users = db.get('users');
+const fs = require('fs');
 
 // My module
 function Accounts(app)
@@ -20,6 +21,8 @@ function Accounts(app)
 		{
 			ud = {
 				username: req.body.username,
+				firstname: req.body.firstname,
+				surname:req.body.surname,
 				hash: data,
 				role: "teacher",
 				email: req.body.email
@@ -228,9 +231,9 @@ function Accounts(app)
 		})
 	})
 
-	app.post('/makeadmin', (req, res) =>{
+	app.post('/changerole', (req, res) =>{
 
-		//A valid admin user can make another user into an admin
+		//Can only be carried out by admin
 
 		var auth = {
 			username: req.session.username,
@@ -244,14 +247,140 @@ function Accounts(app)
 			if(data.valid)
 			{
 				//change user role here
+				return users.findOne(req.body, {role: 1});
 			}
 			else
 			{
-				res.status(400).send(data.info);
+				return Promise.reject(data.info);
 			}
 		})
 
+		.then((data)=>{
+
+			if(data == null)
+			{
+				return Promise.reject("Record not found");
+			}
+			else
+			{
+				data.role = (data.role == "admin")? "teacher" : "admin";
+				return users.update(data._id, {$set: {role: data.role}});
+			}
+
+		})
+
+		.then((doc)=>{
+			res.send("User updated");
+		})
+
+		.catch((err)=>{
+			res.status(400).send(err);
+		})
+
+
 	})
+
+	app.post('/removeuser', (req, res) =>{
+
+		//Can only be carried out by admin
+
+		var auth = {
+			username: req.session.username,
+			password: req.session.password
+		}
+
+		helpers.authenticateUser(auth, users, true)
+
+		.then(function(data){
+
+			if(data.valid)
+			{
+				//change user role here
+				return users.findOne(req.body, {});
+			}
+			else
+			{
+				return Promise.reject(data.info);
+			}
+		})
+
+		.then((data)=>{
+
+			if(data == null)
+			{
+				return Promise.reject("Record not found");
+			}
+			else
+			{
+				return users.remove(data._id);
+			}
+
+		})
+
+		.then((doc)=>{
+			res.send("User removed");
+		})
+
+		.catch((err)=>{
+			res.status(400).send(err);
+		})
+
+	})
+}
+
+Accounts.prototype.generateFakeAccounts = function(numUsers)
+{
+	//generates fake users to bring the number to the required total
+	var numNew = 0;
+	var numOld = 0;
+	users.count()
+
+	.then((doc)=>{
+
+		numOld = doc;
+		numNew = numUsers - numOld;
+		if(numNew < 0)
+		{
+			return Promise.reject();
+		}else{
+			return new Promise(function(resolve, reject)
+			{
+				fs.readFile(__dirname + "/dummyStaff.csv", 'utf8', function(err,data)
+				{
+					resolve(data);
+				})
+			})
+		}
+
+	})
+
+
+	.then((data)=>{
+
+		var temp = data.split("\r");
+		if(numOld + numNew > temp.length)
+		{
+			return Promise.reject();
+		}
+		else
+		{
+
+			var parsed = [];
+			for(var i = numOld; i < numOld + numNew; i++)
+			{
+				console.log(i);
+				let d = temp[i].split(",");
+				let ud = {username: d[3], email: d[2], firstname: d[1], surname: d[0], hash: "", role: "teacher"};
+				parsed.push(ud);
+			}
+			users.insert(parsed);
+		}
+	})
+
+	.catch((doc)=>{
+
+	})
+
 }
 
 module.exports = Accounts;

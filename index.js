@@ -8,6 +8,7 @@ const cookieSession = require('cookie-session');
 const hbs = require('hbs');
 const nodemailer = require('nodemailer');
 const accounts = require('./accounts.js');
+const argv = require('yargs').argv;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -57,11 +58,18 @@ nodemailer.createTestAccount((err, account) => {
 app.use("/libs",express.static(__dirname + '/libs'));
 app.use("/clientscripts",express.static(__dirname + '/clientscripts'));
 
-app.listen(3000, () => console.log('Example app listening on port 3000!'))
+app.listen(3000, () => console.log('Example app listening on port 3000!'));
+
+
 
 //////////////////////////////////////INIT SUBMODULES//////////////////////////////////////
 
 const accountsApp = new accounts(app);
+
+if(argv.generateUsers)
+{
+	accountsApp.generateFakeAccounts(argv.generateUsers);
+}
 
 ///////////////////////////////////////FRONT PAGES////////////////////////////////////
 
@@ -113,17 +121,27 @@ app.get('/adminusers', (req ,res) => {
 
 app.get('/userdata', (req,res) =>{
 
-	//TODO
-	//Add surname and firstnames
-	//Limit number of users per page
-
 	helpers.authenticateUser(req.session, users, true)
 
 	.then((data) =>{
 
 		if(data.valid)
 		{
-			return users.find({},{fields: {username: 1, email: 1, role: 1}, sort: {name: 1}});
+
+			var idx = (req.query.idx != undefined) ? Number(req.query.idx) : 0;
+			var items = (req.query.items != undefined) ? Number(req.query.items) : 50;
+			var query = {};
+			if(req.query.username != undefined)query.username = req.query.username;
+			if(req.query._id != undefined)query._id = req.query._id;
+			if(req.query.firstname != undefined)query.firstname = req.query.firstname;
+			if(req.query.surname != undefined)query.surname = req.query.surname;
+			if(req.query.email != undefined)query.email = req.query.email;
+
+			return users.find(
+				query,
+				{fields: {username: 1, email: 1, role: 1, firstname: 1, surname: 1},
+				sort: {username: 1},
+				skip: idx, limit: items});
 		}
 		else
 		{

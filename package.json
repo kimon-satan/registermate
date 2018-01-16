@@ -7,10 +7,12 @@
     "body-parser": "^1.18.2",
     "cookie-session": "^2.0.0-beta.3",
     "express": "^4.16.2",
+    "fs": "0.0.1-security",
     "hbs": "^4.0.1",
     "monk": "^6.0.5",
     "nodemailer": "^4.4.1",
-    "password-hash-and-salt": "^0.1.4"
+    "password-hash-and-salt": "^0.1.4",
+    "yargs": "^10.1.1"
   },
   "devDependencies": {},
   "scripts": {

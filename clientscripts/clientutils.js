@@ -7,6 +7,17 @@ function validateUserData(ud)
 		error = "Username must be 5 characters or longer";
 		return error;
 	}
+	if(ud.firstname.length < 1)
+	{
+		error = "You must enter a first name.";
+		return error;
+	}
+
+	if(ud.surname.length < 1)
+	{
+		error = "You must enter a surname.";
+		return error;
+	}
 
 	var pat = /^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/
 	if(!pat.test(ud.email))
