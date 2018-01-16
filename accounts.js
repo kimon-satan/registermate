@@ -231,6 +231,50 @@ function Accounts(app)
 		})
 	})
 
+	app.get('/userdata', (req,res) =>{
+
+		helpers.authenticateUser(req.session, users, true)
+
+		.then((data) =>{
+
+			if(data.valid)
+			{
+
+				var idx = (req.query.idx != undefined) ? Number(req.query.idx) : 0;
+				var items = (req.query.items != undefined) ? Number(req.query.items) : 50;
+				var query = {};
+				if(req.query.username != undefined)query.username = req.query.username;
+				if(req.query._id != undefined)query._id = req.query._id;
+				if(req.query.firstname != undefined)query.firstname = req.query.firstname;
+				if(req.query.surname != undefined)query.surname = req.query.surname;
+				if(req.query.email != undefined)query.email = req.query.email;
+
+				return users.find(
+					query,
+					{fields: {username: 1, email: 1, role: 1, firstname: 1, surname: 1},
+					sort: {username: 1},
+					skip: idx, limit: items});
+			}
+			else
+			{
+				return Promise.reject("Error: Access forbidden");
+			}
+
+		})
+
+		.then((docs)=>{
+
+			res.json(docs);
+
+		})
+
+
+		.catch((message)=>
+		{
+			res.status(400).send(message);
+		})
+	})
+
 	app.post('/changerole', (req, res) =>{
 
 		//Can only be carried out by admin

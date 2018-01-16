@@ -8,6 +8,7 @@ const cookieSession = require('cookie-session');
 const hbs = require('hbs');
 const nodemailer = require('nodemailer');
 const accounts = require('./accounts.js');
+const sessionManager = require('./sessionmanager.js');
 const argv = require('yargs').argv;
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -65,6 +66,7 @@ app.listen(3000, () => console.log('Example app listening on port 3000!'));
 //////////////////////////////////////INIT SUBMODULES//////////////////////////////////////
 
 const accountsApp = new accounts(app);
+const sessionsApp = new sessionManager(app);
 
 if(argv.generateUsers)
 {
@@ -119,46 +121,14 @@ app.get('/adminusers', (req ,res) => {
 	})
 })
 
-app.get('/userdata', (req,res) =>{
-
-	helpers.authenticateUser(req.session, users, true)
-
-	.then((data) =>{
-
-		if(data.valid)
-		{
-
-			var idx = (req.query.idx != undefined) ? Number(req.query.idx) : 0;
-			var items = (req.query.items != undefined) ? Number(req.query.items) : 50;
-			var query = {};
-			if(req.query.username != undefined)query.username = req.query.username;
-			if(req.query._id != undefined)query._id = req.query._id;
-			if(req.query.firstname != undefined)query.firstname = req.query.firstname;
-			if(req.query.surname != undefined)query.surname = req.query.surname;
-			if(req.query.email != undefined)query.email = req.query.email;
-
-			return users.find(
-				query,
-				{fields: {username: 1, email: 1, role: 1, firstname: 1, surname: 1},
-				sort: {username: 1},
-				skip: idx, limit: items});
-		}
-		else
-		{
-			return Promise.reject("Error: Access forbidden");
-		}
-
-	})
-
-	.then((docs)=>{
-
-		res.json(docs);
-
-	})
-
-
-	.catch((message)=>
+app.get('/createsession', (req, res) =>
+{
+	if (req.session.username != null && req.session.password != null)
 	{
-		res.status(400).send(message);
-	})
+		res.render(__dirname + '/templates/createSession.hbs');
+	}
+	else
+	{
+		res.render(__dirname + '/templates/login.hbs');
+	}
 })

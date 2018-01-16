@@ -1,0 +1,50 @@
+<html>
+{{> header}}
+<body>
+	<div class="container-fluid">
+		{{> topbar}}
+		<h1>Registermate</h1>
+		<h3>Create a new session</h3>
+
+		<div class="form-group form-inline" style="margin-top: 50px">
+			<div style="margin-top: 20px">
+				 <label for="departmentInput">Select your department</label>
+				 <select class="form-control" id="departmentInput">
+					 <option value="none">none</option>
+				 </select>
+			</div>
+			<div style="margin-top: 20px">
+				<label for="newCourse">Create a new module name</label>
+				<input id="newCourse" class="form-control" placeholder="Intro to Computing">
+
+				<label for="courseInput">or use an existing module name</label>
+				<select class="form-control" id="courseInput">
+						<option value="none">none</option>
+				</select>
+
+			</div>
+			<div style="margin-top: 20px">
+				 <label for="newSession">Create a new session name</label>
+				 <input id="newSession" class="form-control" value="Lecture">
+
+			</div>
+			<div style="margin-top: 20px">
+				 <label for="newSession">Select a term</label>
+				<select class="form-control" id="termInput">
+					<option value="none">none</option>
+					<option value="term1">term 1</option>
+					<option value="term2">term 2</option>
+					<option value="term3">term 3</option>
+
+				 </select>
+
+			</div>
+
+			<div style="margin-top: 30px">
+				<input class="btn btn-danger" id="createSession" type="button" value="Create new session">
+			</div>
+		</div>
+	</div>
+	<script src="clientscripts/createSession.js"></script>
+</body>
+</html>
