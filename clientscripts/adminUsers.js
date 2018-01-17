@@ -41,6 +41,24 @@ $(document).ready(function()
 		}
 	})
 
+	$(document).on("click",'.purge', function(e)
+	{
+
+		var _id = e.target.parentElement.parentElement.id;
+		var un = $('#' + _id +' > .username').text();
+		var c = confirm("Are you sure you want to purge " + un + " ?");
+		if(c)
+		{
+			$.post(server_url + "/removefromsessions", {_id: _id}, function(res)
+			{
+				alert(res);
+			})
+			.fail(function(res){
+				alert(res.responseText);
+			})
+		}
+	})
+
 });
 
 function updateTable(filter)
@@ -58,8 +76,9 @@ function updateTable(filter)
 			row.append("<td class='email'>" + data[i].email + "</td>");
 			row.append("<td class='role'>" + data[i].role + "</td>");
 			var col = $("<td></td>");
-			col.append("<button class='btn btn-warning hspaced role'>change role</button>");
-			col.append("<button class='btn btn-danger hspaced remove'>remove user</button>");
+			col.append("<button class='btn btn-warning btn-xs hspaced role'>change role</button>");
+			col.append("<button class='btn btn-danger btn-xs hspaced remove'>remove user</button>");
+			col.append("<button class='btn btn-danger btn-xs hspaced purge'>purge sessions</button>");
 			row.append(col);
 			$('#usertable').append(row);
 		}

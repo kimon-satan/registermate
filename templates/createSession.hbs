@@ -11,8 +11,17 @@
 		<div class="form-group form-inline" style="margin-top: 50px">
 
 			<div style="margin-top: 20px">
-				 <label for="newSession">Create a new session name</label>
-				 <input id="newSession" class="form-control" placeholder="Lecture">
+				<label for="typeInput">Select a session type</label>
+				<select class="form-control" id="typeInput">
+					<option value="Lecture">Lecture</option>
+					<option value="Seminar">Seminar</option>
+					<option value="Lab">Lab</option>
+					<option value="Workshop">Workshop</option>
+					<option value="Meeting">Meeting</option>
+					<option value="Masterclass">Masterclass</option>
+					<option value="Talk">Talk</option>
+					<option value="Excursion">Excursion</option>
+				</select>
 			</div>
 
 			<div style="margin-top: 20px">
@@ -23,6 +32,7 @@
 					<option value="term2">term 2</option>
 					<option value="term3">term 3</option>
 				</select>
+				<i>This is optional</i>
 			</div>
 
 			<div style="margin-top: 20px">
@@ -32,31 +42,57 @@
 				 </select>
 			</div>
 
-			<div class="panel panel-default" style="margin-top: 20px">
+			<div style="margin-top: 20px" id="moduleSinglePanel">
+				<label for="moduleInputSingle">Select a module</label>
+				<select class="form-control" id="moduleInputSingle">
+						<option value="none">none</option>
+				</select>
+			</div>
+
+
+			<div id="modulePanel" class="panel panel-default hidden" style="margin-top: 20px">
 				<div class="panel-heading">Add modules</div>
 				<div class="panel-body">
 				<div style="margin-top: 20px">
-					<label for="moduleInput">existing modules</label>
-					<select class="form-control" id="moduleInput">
+					<label for="moduleInputMultiple">Select a module</label>
+					<select class="form-control" id="moduleInputMultiple">
 							<option value="none">none</option>
 					</select>
 					<button id="addExisting" class="btn btn-info">add to session</button>
 				</div>
+
 				<div style="margin-top: 20px">
-					<label for="newModule">custom module name</label>
-					<input id="newModule" class="form-control" placeholder="Revision Sessions">
-					<button id="addCustom" class="btn btn-info">add to session</button>
-				</div>
-
-
-				<div style="margin-top: 30px">
 					<b>Session modules:</b>
-					<ul id="sessionModules">
-					</ul>
+					<table  class="table table-bordered">
+						<thead class="table table-bordered">
+							<tr>
+								<th>Module</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody class="table table-bordered" id="sessionModules"></tbody>
+					</table>
 				</div>
-				</div>
-
 			</div>
+		</div>
+
+		<div class="checkbox" style="margin-top: 20px">
+			<label>
+				<input id="multiple" type="checkbox"> This register is for multiple modules
+			</label>
+		</div>
+
+		<div style="margin-top: 20px">
+			<label for="customLabel">Add a custom label</label>
+			<input type="text" id="customLabel">
+			<i>This is optional</i>
+		</div>
+
+			<div style="margin-top: 20px">
+			<b>Session name:</b>
+			<div id="sessionName"></div>
+			</div>
+
 
 			<div style="margin-top: 30px; text-align: center">
 				<input class="btn btn-danger btn-lg" id="createSession" type="button" value="Create new session">

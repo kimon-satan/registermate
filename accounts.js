@@ -371,6 +371,39 @@ function Accounts(app)
 		})
 
 	})
+
+	app.get('/instructors', (req, res) =>{
+		//Can only be carried out by admin
+
+		var auth = {
+			username: req.session.username,
+			password: req.session.password
+		}
+
+		helpers.authenticateUser(auth, users, true)
+
+		.then(function(data){
+
+			if(data.valid)
+			{
+				//search here
+				return users.find({department: req.query.department},{fields: {username: 1, firstname: 1, surname: 1, email: 1}, sort:{firstname: 1}});
+			}
+			else
+			{
+				return Promise.reject(data.info);
+			}
+		})
+
+		.then((doc)=>{
+			res.send(doc);
+		})
+
+		.catch((err)=>{
+			res.status(400).send(err);
+		})
+
+	});
 }
 
 Accounts.prototype.generateFakeAccounts = function(numUsers)
@@ -415,6 +448,7 @@ Accounts.prototype.generateFakeAccounts = function(numUsers)
 			{
 				let d = temp[i].split(",");
 				let ud = {username: d[3], email: d[2], firstname: d[1], surname: d[0], hash: "", role: "teacher", sessions: []};
+				ud.department = (Math.random() > 0.5)? "Computing" : "Art";
 				parsed.push(ud);
 			}
 			users.insert(parsed);

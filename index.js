@@ -15,7 +15,7 @@ const PORT = 8000;
 //global.URL = "http://doc.gold.ac.uk/usr/215"
 global.URL = "";
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use(cookieSession({
@@ -147,5 +147,5 @@ app.get('/createsession', (req, res) =>
 		{
 			res.render(__dirname + '/templates/login.hbs', {SERVER_URL: URL});
 		}
-		
+
 	})

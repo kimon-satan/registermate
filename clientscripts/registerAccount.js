@@ -1,3 +1,14 @@
+$(document).ready(function(e) {
+
+	$.get("/departmentlist",function(res)
+	{
+		for(var i = 0; i < res.length; i++)
+		{
+			$('#departmentInput').append("<option value='"+ res[i] +"'>" + res[i] + "</option>");
+		}
+
+	});
+})
 
 $('#submit').on('click', function(e){
 
@@ -8,6 +19,7 @@ $('#submit').on('click', function(e){
 	ud.password2 = $('#password2').val();
 	ud.firstname = $('#firstname').val();
 	ud.surname = $('#surname').val();
+	ud.department = $('#departmentInput').val();
 	e.preventDefault();
 	var error = validateUserData(ud);
 

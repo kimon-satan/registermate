@@ -29,6 +29,7 @@ function SessionManager(app)
 	{
 		var d = JSON.parse(data);
 		departmentList = Object.keys(d);
+		departmentList.sort();
 
 		//iterate through departments
 		Object.keys(d).forEach(function(item)
@@ -62,8 +63,15 @@ function SessionManager(app)
 
 	});
 
-	app.post('/createsession', (req,res) =>{
+	app.get('/usersessions', (req,res) =>{
+		sessions.find({teachers: req.session.username},
+			{sort: {sessionname: 1},fields: {sessionname: 1}})
+		.then((doc)=>{
+			res.send(doc);
+		})
+	})
 
+	app.post('/createsession', (req,res) =>{
 
 		var auth = {
 			username: req.session.username,
@@ -92,6 +100,7 @@ function SessionManager(app)
 				//okay we can make the module
 				var s = req.body;
 				s.teachers = [req.session.username];
+
 				return sessions.insert(s);
 				//add the session to the teacher
 
@@ -112,6 +121,43 @@ function SessionManager(app)
 		.catch((err)=>{
 			res.status(400).send(err);
 		})
+
+	})
+
+	app.post('/removefromsessions', (req,res) =>{
+		var auth = {
+			username: req.session.username,
+			password: req.session.password
+		}
+
+		helpers.authenticateUser(auth, users, false)
+
+		.then(function(data){
+
+			if(data.valid)
+			{
+				//check the session doesn't already exist
+				return sessions.update({},{$pull: {teachers: req.body.username}});
+			}
+			else
+			{
+				return Promise.reject(data.info);
+			}
+		})
+
+		.then((doc)=>{
+			return users.update({username: req.body.username},{$set: {sessions: []}});
+
+		})
+
+		.then((doc)=>{
+			res.send("user purged");
+		})
+
+		.catch((doc)=>{
+			res.status(400).send(doc);
+		})
+
 
 	})
 
