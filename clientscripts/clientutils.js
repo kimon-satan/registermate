@@ -1,4 +1,3 @@
-const SERVER_URL = "http://doc.gold.ac.uk/usr/215";
 
 function validateUserData(ud)
 {

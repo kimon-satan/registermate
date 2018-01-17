@@ -7,7 +7,7 @@ $('#submit').on('click', function(e){
 	e.preventDefault();
 
 	var req = $.post(
-		SERVER_URL + "/login", ud, function(res)
+		server_url + "/login", ud, function(res)
 		{
 			document.write(res);
 		}

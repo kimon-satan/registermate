@@ -6,6 +6,12 @@
 	<!--<link rel="stylesheet" href="/libs/bootstrap/css/bootstrap-theme.min.css">-->
 	<script src="/libs/bootstrap/js/bootstrap.js"></script>
 	<script src="/clientscripts/clientutils.js"></script>
+	<script>
+		if(typeof server_url == "undefined")
+		{
+			var server_url = "{{SERVER_URL}}";
+		}
+	</script>
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 	<style>

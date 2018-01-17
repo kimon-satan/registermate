@@ -9,7 +9,7 @@ function Accounts(app)
 {
 
 	app.get('/registeraccount', (req, res) =>{
-		res.render(__dirname + '/templates/registerAccount.hbs');
+		res.render(__dirname + '/templates/registerAccount.hbs', {SERVER_URL: URL});
 	})
 	app.post('/createaccount', (req, res) =>
 	{
@@ -108,7 +108,7 @@ function Accounts(app)
 	/////////////////////////////////////// RESET STUFF //////////////////////////////////////
 
 	app.get('/requestreset', (req, res) =>{
-		res.render(__dirname + '/templates/requestReset.hbs');
+		res.render(__dirname + '/templates/requestReset.hbs', {SERVER_URL: URL});
 	})
 	app.post('/emailreset', (req, res) =>
 	{
@@ -128,7 +128,7 @@ function Accounts(app)
 				users.update({username: doc.username},{$set: {token: token, expiretime: expiretime}});
 
 				res.render(__dirname + '/templates/resetMessage.hbs',
-				{ username: doc.username, site_url: "localhost:3000", token: token },
+				{ username: doc.username, site_url: URL, token: token },
 				function(err, html)
 				{
 
@@ -187,7 +187,7 @@ function Accounts(app)
 		var username = req.params.username;
 		req.session.username = username;
 		req.session.token = token;
-		res.render(__dirname + '/templates/resetPassword.hbs');
+		res.render(__dirname + '/templates/resetPassword.hbs', {SERVER_URL: URL});
 
 	})
 	app.post('/reset', (req, res) => {

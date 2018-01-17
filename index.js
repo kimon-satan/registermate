@@ -10,8 +10,10 @@ const nodemailer = require('nodemailer');
 const accounts = require('./accounts.js');
 const sessionManager = require('./sessionmanager.js');
 const argv = require('yargs').argv;
-global.URL = "http://doc.gold.ac.uk/usr/215"
+
 const PORT = 8000;
+//global.URL = "http://doc.gold.ac.uk/usr/215"
+global.URL = "";
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -78,7 +80,7 @@ if(argv.generateUsers)
 ///////////////////////////////////////FRONT PAGES////////////////////////////////////
 
 app.get('/', (req, res) => res.redirect(URL + '/student/'))
-app.get('/student', (req, res) => res.render(__dirname + '/templates/student.hbs'))
+app.get('/student', (req, res) => res.render(__dirname + '/templates/student.hbs', {SERVER_URL: URL}))
 app.get('/teacher', (req, res) =>
 	{
 
@@ -87,16 +89,16 @@ app.get('/teacher', (req, res) =>
 				// Already logged in.
 				if(req.session.role == "teacher")
 				{
-					res.render(__dirname + '/templates/teacherMenu.hbs');
+					res.render(__dirname + '/templates/teacherMenu.hbs', {SERVER_URL: URL});
 				}
 				else
 				{
-					res.render(__dirname + '/templates/adminMenu.hbs');
+					res.render(__dirname + '/templates/adminMenu.hbs', {SERVER_URL: URL});
 				}
 		}
 		else
 		{
-			res.render(__dirname + '/templates/login.hbs');
+			res.render(__dirname + '/templates/login.hbs', {SERVER_URL: URL});
 		}
 	}
 )
@@ -108,7 +110,7 @@ app.get('/adminusers', (req ,res) => {
 
 		if(data.valid)
 		{
-			res.render(__dirname + "/templates/adminUsers.hbs")
+			res.render(__dirname + "/templates/adminUsers.hbs", {SERVER_URL: URL})
 		}
 		else
 		{
@@ -127,10 +129,10 @@ app.get('/createsession', (req, res) =>
 {
 	if (req.session.username != null && req.session.password != null)
 	{
-		res.render(__dirname + '/templates/createSession.hbs');
+		res.render(__dirname + '/templates/createSession.hbs', {SERVER_URL: URL});
 	}
 	else
 	{
-		res.render(__dirname + '/templates/login.hbs');
+		res.render(__dirname + '/templates/login.hbs', {SERVER_URL: URL});
 	}
 })
