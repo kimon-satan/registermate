@@ -14,7 +14,7 @@ $('#submit').on('click', function(e){
 	if(error == null)
 	{
 		$.post(
-			"/createaccount", ud, function(res)
+			SERVER_URL + "/createaccount", ud, function(res)
 			{
 				document.write(res);
 			}

@@ -77,7 +77,7 @@ $(document).ready(function(){
 			}
 		}
 
-		var req = $.post("/createsession",sdoc,function(res){
+		var req = $.post(SERVER_URL + "/createsession",sdoc,function(res){
 			//TODO move to next stage
 			console.log("Yay");
 		});
