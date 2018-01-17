@@ -75,7 +75,7 @@ function updateTable(filter)
 
 function updateRow(_id)
 {
-	$.get("/userdata", {_id: _id} ,function(data)
+	$.get(server_url + "/userdata", {_id: _id} ,function(data)
 	{
 		if(data.length > 0)
 		{
