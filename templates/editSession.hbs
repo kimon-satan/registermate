@@ -1,0 +1,84 @@
+<html>
+{{> header}}
+<body>
+	<div class="container-fluid">
+		{{> topbar}}
+		<h1>Registermate</h1>
+		<h3>Edit session</h3>
+
+		<div class="form-group form-inline" style="margin-top: 50px">
+
+			<div>
+				<label for="sessionInput">Select a session: </label>
+				<select class="form-control" id="sessionInput">
+						<option value="none">none</option>
+				</select>
+			</div>
+
+			<div class="panel panel-default panel-danger" style="margin-top: 30px">
+				<div class="panel-heading">Danger zone</div>
+				<div class="panel-body">
+					<input class="btn btn-danger" style="margin-left: 20px" id="removeSession" type="button" value="Remove this session">
+				</div>
+			</div>
+
+			<div style="margin-top: 30px">
+				<label for="instructor">Choose an instructor: </label>
+				<select class="form-control" id="instructorInput">
+					<option value="none">none</option>
+				</select>
+				<input class="btn btn-warning" id="addInstructor" type="button" value="Add Instructor">
+			</div>
+
+			<div style="margin-top: 30px">
+				<h4>Session instructors</h4>
+				<table class="table table-bordered">
+					<thead class="table table-bordered">
+						<tr>
+							<th>Name</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody class="table table-bordered"></tbody>
+				</table>
+			</div>
+
+			<div style="margin-top: 30px">
+				<div><b>Add student details: </b><br></div>
+				<textarea id="newStudents" rows="10" cols="50">
+Cut and paste student details here using the format:
+
+surname, first name, campus name
+
+eg. Katan, Simon, skata001
+
+use one line per student
+				</textarea>
+			</div>
+			<div style="margin-top: 20px">
+				<input class="btn btn-warning" id="addStudents" type="button" value="Add students to session">
+			</div>
+
+				<div style="margin-top: 50px">
+					<h4>Session students</h4>
+					<table class="table table-bordered">
+						<thead class="table table-bordered">
+							<tr class="table-bordered">
+								<th>campus</th>
+								<th>firstname</th>
+								<th>surname</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+
+					</table>
+				</div>
+
+
+			</div>
+
+</body>
+<script src="clientscripts/editSession.js"></script>
+</html>

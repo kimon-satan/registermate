@@ -7,7 +7,7 @@ const departmentData = db.get('departmentData')
 const fs = require('fs');
 var departmentList = [];
 
-//TODO
+
 //Sessions DB
 /*
 {
@@ -27,7 +27,6 @@ function SessionManager(app)
 	fs.readFile(__dirname + "/config/departmentinfo.json",
 	function(err, data)
 	{
-		//TODO insert module titles into DB if they don't exist ?
 		var d = JSON.parse(data);
 		departmentList = Object.keys(d);
 
@@ -115,6 +114,8 @@ function SessionManager(app)
 		})
 
 	})
+
+
 }
 
 module.exports = SessionManager;

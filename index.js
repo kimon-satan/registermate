@@ -136,3 +136,16 @@ app.get('/createsession', (req, res) =>
 		res.render(__dirname + '/templates/login.hbs', {SERVER_URL: URL});
 	}
 })
+
+	app.get('/editsession' , (req, res) => {
+
+		if (req.session.username != null && req.session.password != null)
+		{
+			res.render(__dirname + '/templates/editSession.hbs', {SERVER_URL: URL});
+		}
+		else
+		{
+			res.render(__dirname + '/templates/login.hbs', {SERVER_URL: URL});
+		}
+		
+	})

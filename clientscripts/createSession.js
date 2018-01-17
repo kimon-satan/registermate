@@ -79,11 +79,21 @@ $(document).ready(function(){
 
 		var req = $.post(server_url + "/createsession",sdoc,function(res){
 			//TODO move to next stage
-			console.log("Yay");
+			alert("Congratulations !\nYour session has been created.\nNow lets add some students and teachers...");
+
 		});
 
 		req.fail(function(res){
 			alert(res.responseText);
+		})
+
+		req.done(function(){
+
+			$.get(server_url + "/editsession", sdoc, function(res)
+			{
+				//redirect
+				document.write(res);
+			})
 		})
 
 
