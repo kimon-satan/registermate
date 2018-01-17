@@ -10,7 +10,8 @@ const nodemailer = require('nodemailer');
 const accounts = require('./accounts.js');
 const sessionManager = require('./sessionmanager.js');
 const argv = require('yargs').argv;
-const URL = "http://doc.gold.ac.uk/usr/215"
+global.URL = "http://doc.gold.ac.uk/usr/215"
+const PORT = 8000;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -60,7 +61,7 @@ nodemailer.createTestAccount((err, account) => {
 app.use("/libs",express.static(__dirname + '/libs'));
 app.use("/clientscripts",express.static(__dirname + '/clientscripts'));
 
-app.listen(8000, () => console.log('Example app listening on port 8000!'));
+app.listen(PORT, () => console.log('Example app listening on port ' + PORT + '!'));
 
 
 

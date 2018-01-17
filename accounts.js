@@ -57,7 +57,7 @@ function Accounts(app)
 					req.session.username = ud.username;
 					req.session.password = req.body.password1;
 					req.session.role = ud.role;
-					res.redirect('/teacher');
+					res.redirect(URL + '/teacher');
 				}
 				else
 				{
@@ -75,7 +75,7 @@ function Accounts(app)
 		{
 			if(req.session.username != null && req.session.password != null)
 			{
-				res.redirect("/teacher")
+				res.redirect(URL + "/teacher")
 			}
 			else
 			{
@@ -89,7 +89,7 @@ function Accounts(app)
 						req.session.username = req.body.username;
 						req.session.password = req.body.password;
 						req.session.role = data.role;
-						res.redirect('/teacher');
+						res.redirect(URL + '/teacher');
 					}
 					else
 					{
@@ -102,7 +102,7 @@ function Accounts(app)
 	app.get('/logout', (req, res) =>
 	{
 		req.session = null;
-		res.redirect('/teacher');
+		res.redirect(URL + '/teacher');
 	})
 
 	/////////////////////////////////////// RESET STUFF //////////////////////////////////////
