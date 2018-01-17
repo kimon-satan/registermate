@@ -26,7 +26,7 @@
 			e.preventDefault();
 
 			var req = $.post(
-				"/emailreset", ud, function(res)
+				SERVER_URL + "/emailreset", ud, function(res)
 				{
 					alert(res);
 					$('#submit').removeAttr("disabled");

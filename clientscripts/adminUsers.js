@@ -12,7 +12,7 @@ $(document).ready(function()
 	$(document).on("click",'.role',function(e)
 	{
 		var _id = e.target.parentElement.parentElement.id;
-		$.post("/changerole", {_id: _id}, function(res)
+		$.post(SERVER_URL +"/changerole", {_id: _id}, function(res)
 		{
 			console.log(res);
 			updateRow(_id);
@@ -30,7 +30,7 @@ $(document).ready(function()
 		var c = confirm("Are you sure you want to remove " + un + " ?");
 		if(c)
 		{
-			$.post("/removeuser", {_id: _id}, function(res)
+			$.post(SERVER_URL + "/removeuser", {_id: _id}, function(res)
 			{
 				console.log(res, _id);
 				$('#' + _id).remove();
@@ -45,7 +45,7 @@ $(document).ready(function()
 
 function updateTable(filter)
 {
-	$.get("/userdata", filter ,function(data){
+	$.get(SERVER_URL + "/userdata", filter ,function(data){
 
 		counter += data.length;
 
