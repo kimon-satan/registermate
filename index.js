@@ -12,8 +12,8 @@ const sessionManager = require('./sessionmanager.js');
 const argv = require('yargs').argv;
 
 const PORT = 8000;
-//global.URL = "http://doc.gold.ac.uk/usr/215"
-global.URL = "";
+global.URL = "http://doc.gold.ac.uk/usr/215"
+//global.URL = "";
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
