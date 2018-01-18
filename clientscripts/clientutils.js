@@ -1,9 +1,14 @@
 function toObject(arr)
 {
-  var rv = {};
-  for (var i = 0; i < arr.length; ++i)
-    if (arr[i] !== undefined) rv[i] = arr[i];
-  return rv;
+	var rv = {};
+	for (var i = 0; i < arr.length; ++i)
+		if (arr[i] !== undefined) rv[i] = arr[i];
+	return rv;
+}
+
+function capitalize(string)
+{
+	return string.charAt(0).toUpperCase() + string.toLowerCase().slice(1);
 }
 
 function validateUserData(ud)

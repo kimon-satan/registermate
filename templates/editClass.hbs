@@ -18,7 +18,14 @@
 			<div class="panel panel-default panel-danger" style="margin-top: 30px">
 				<div class="panel-heading">Danger zone</div>
 				<div class="panel-body">
-					<input class="btn btn-danger" style="margin-left: 20px" id="removeClass" type="button" value="Remove this class">
+					<input class="btn btn-danger" style="margin-left: 20px" id="removeClass" type="button" value="Delete class">
+					<div style="margin-top: 40px">
+					<input class="btn btn-danger" style="margin-left: 20px" id="importClass" type="button" value="Import data">
+					<label for="classInput">from class: </label>
+					<select class="form-control" id="importInput">
+							<option value="none">none</option>
+					</select>
+					</div>
 				</div>
 			</div>
 
@@ -69,13 +76,13 @@ use one line per student
 					<table class="table table-bordered">
 						<thead class="table table-bordered">
 							<tr class="table-bordered">
-								<th>campus</th>
-								<th>firstname</th>
 								<th>surname</th>
-								<th>Actions</th>
+								<th>firstname</th>
+								<th>campus</th>
+								<th>actions</th>
 							</tr>
 						</thead>
-						<tbody>
+						<tbody class="table table-bordered" id="studentsTable">
 						</tbody>
 
 					</table>

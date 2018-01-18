@@ -1,5 +1,12 @@
-2. implement edit class (50%)
-3. admin students (basic)
-4. admin classes (basic)
-5. implement register interface
-6. deploy on VM (50%)
+
+
+2. implement edit class (95%)
+	- students get department array as property
+	- import data from an existing class
+	- num sessions
+3. implement register interface !
+4. check VM deployment
+5. admin students (basic)
+	- just list them + add and remove
+6. admin classes (basic)
+	- just list them
