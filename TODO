@@ -3,7 +3,3 @@
 4. admin classes (basic)
 5. implement register interface
 6. deploy on VM (50%)
-
-
-//TODO change teacher arrays to arrays of objects {_id:, username:, firstname: , lastname:  }
-//TODO change class arrays in users to {_id: , classname: }

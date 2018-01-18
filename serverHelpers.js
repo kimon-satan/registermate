@@ -31,7 +31,7 @@ exports.authenticateUser = function(ud,db,requireAdmin)
 						{
 							if(!requireAdmin || doc.role == "admin")
 							{
-								resolve({valid: true, info:"User authenicated", role: doc.role});
+								resolve({valid: true, info:"User authenicated", role: doc.role, _id: doc._id});
 							}
 							else
 							{
@@ -55,7 +55,7 @@ exports.authenticateUser = function(ud,db,requireAdmin)
 						{
 							if(doc == null)
 							{
-								resolve({valid: true, info: "First user"});
+								resolve({valid: true, info: "First user", _id: doc._id});
 							}
 							else
 							{

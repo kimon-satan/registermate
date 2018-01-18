@@ -49,7 +49,7 @@ $(document).ready(function()
 		var c = confirm("Are you sure you want to purge " + un + " ?");
 		if(c)
 		{
-			$.post(server_url + "/removefromclasss", {_id: _id}, function(res)
+			$.post(server_url + "/removefromclasses", {_id: _id}, function(res)
 			{
 				alert(res);
 			})

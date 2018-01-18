@@ -50,23 +50,29 @@ function Accounts(app)
 
 			if(doc == null)
 			{
-				users.insert(ud);
-				if(!req.session.username && !req.session.password)
-				{
-					//if not logged in then login and redirect ...
-					req.session.username = ud.username;
-					req.session.password = req.body.password1;
-					req.session.role = ud.role;
-					res.redirect(URL + '/teacher');
-				}
-				else
-				{
-					res.status(200).send('Account created');
-				}
+				return users.insert(ud);
+
 			}
 			else
 			{
 				res.status(400).send('A user of that name already exists');
+			}
+		})
+
+		.then((doc)=>{
+
+			if(!req.session.username && !req.session.password)
+			{
+				//if not logged in then login and redirect ...
+				req.session.username = ud.username;
+				req.session.password = req.body.password1;
+				req.session.role = ud.role;
+				req.session._id = doc._id;
+				res.redirect(URL + '/teacher');
+			}
+			else
+			{
+				res.status(200).send('Account created');
 			}
 		})
 	})
@@ -89,6 +95,7 @@ function Accounts(app)
 						req.session.username = req.body.username;
 						req.session.password = req.body.password;
 						req.session.role = data.role;
+						req.session._id = data._id;
 						res.redirect(URL + '/teacher');
 					}
 					else

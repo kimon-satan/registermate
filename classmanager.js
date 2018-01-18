@@ -66,7 +66,7 @@ function ClassManager(app)
 	app.get('/userclasses', (req,res) =>
 	{
 		//get a list of classes for a user
-		classes.find({teachers: req.session.username},
+		classes.find({"teachers.username": req.session.username},
 			{sort: {classname: 1},fields: {classname: 1}})
 		.then((doc)=>{
 			res.send(doc);
@@ -105,16 +105,18 @@ function ClassManager(app)
 		{
 			username: req.session.username,
 			password: req.session.password
-		}
+		};
+
+		var teacherDoc;
 
 		helpers.authenticateUser(auth, users, false)
 
-		.then(function(data){
+		.then((data)=>{
 
 			if(data.valid)
 			{
-				//check the class doesn't already exist
-				return classes.findOne(req.body);
+				//get the teacher
+				return users.findOne(data._id,{fields: {username: 1, firstname: 1, surname: 1}});
 			}
 			else
 			{
@@ -122,18 +124,23 @@ function ClassManager(app)
 			}
 		})
 
-		.then((doc)=>{
+		.then((doc)=>
+		{
+			teacherDoc = doc;
+			return classes.findOne({classname: req.body.classname});
+		})
+
+		.then((doc)=>
+		{
 
 			if(doc == null)
 			{
-				//okay we can make the module
+				//okay we can make the class
 				var s = req.body;
-				s.teachers = [req.session.username];
+				s.teachers = [teacherDoc];
 
 				return classes.insert(s);
 				//add the class to the teacher
-
-
 			}
 			else
 			{
@@ -153,7 +160,7 @@ function ClassManager(app)
 
 	})
 
-	app.post('/removefromclasss', (req,res) =>
+	app.post('/removefromclasses', (req,res) =>
 	{
 		//removes a user from all classes
 		//we actually need to do this before removing users
@@ -168,13 +175,18 @@ function ClassManager(app)
 
 			if(data.valid)
 			{
-				//check the class doesn't already exist
-				return classes.update({},{$pull: {teachers: req.body.username}, multi: true});
+				//get the teacherDoc
+				return users.findOne(req.body._id,{fields: {username: 1, firstname: 1, surname: 1}});
 			}
 			else
 			{
 				return Promise.reject(data.info);
 			}
+		})
+
+		.then((doc)=>{
+			console.log(doc);
+			return classes.update({},{$pull: {"teachers": doc}},{multi: true});
 		})
 
 		.then((doc)=>
@@ -205,7 +217,7 @@ function ClassManager(app)
 
 		.then((data)=>{
 			//find the teacher
-			return users.findOne(req.body.teacher);
+			return users.findOne(req.body.teacher,{fields: {username: 1, firstname: 1, surname: 1}});
 		})
 
 		.then((data)=>
@@ -219,7 +231,7 @@ function ClassManager(app)
 			{
 				//add the teacher and send the class doc
 				users.update(data._id,{$addToSet: {classes: req.body.class}});
-				return classes.update(req.body.class, {$addToSet: {teachers: data.username}});
+				return classes.update(req.body.class, {$addToSet: {teachers: data}});
 			}
 		})
 
@@ -238,9 +250,6 @@ function ClassManager(app)
 
 	app.post('/removeteacher', (req,res) =>
 	{
-		//TODO change teacher arrays to arrays of objects {_id:, username:, firstname: , lastname:  }
-		//TODO change class arrays in users to {_id: , classname: }
-		//TODO change class to class across codebase
 
 		//add an teacher to a class
 		//get a class document
@@ -253,7 +262,7 @@ function ClassManager(app)
 
 		.then((data)=>{
 			//find the teacher
-			return users.findOne({username: req.body.teacher});
+			return users.findOne(req.body.teacher,{fields: {username: 1, firstname: 1, surname: 1}});
 		})
 
 		.then((data)=>
@@ -267,7 +276,7 @@ function ClassManager(app)
 			{
 				//remove the teacher
 				users.update(data._id,{$pull: {classes: req.body.class}});
-				return classes.update(req.body.class, {$pull: {teachers: data.username}});
+				return classes.update(req.body.class, {$pull: {teachers: data}});
 			}
 		})
 

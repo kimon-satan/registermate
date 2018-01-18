@@ -66,8 +66,8 @@ $(document).ready(function(){
 
 	$(document).on("click", ".remove", function(e)
 	{
-		var un = e.target.id;
-		var req = $.post("/removeteacher", {class: classDoc._id, teacher: un},
+		var _id = e.target.id;
+		var req = $.post("/removeteacher", {class: classDoc._id, teacher: _id},
 		function(res)
 		{
 		 classDoc = res;
@@ -82,8 +82,8 @@ $(document).ready(function(){
 		for(var i = 0; i < classDoc.teachers.length; i++)
 		{
 			var row = $('<tr></tr>');
-			row.append($('<td>' + classDoc.teachers[i] + '</td>'));
-			row.append($('<td><button class="btn btn-xs btn-danger remove" id="' + classDoc.teachers[i] + '">remove</button></td>'));
+			row.append($('<td>'+ classDoc.teachers[i].firstname + ", " +classDoc.teachers[i].surname + ", " + classDoc.teachers[i].username + '</td>'));
+			row.append($('<td><button class="btn btn-xs btn-danger remove" id="' + classDoc.teachers[i]._id + '">remove</button></td>'));
 			$('#teachersTable').append(row);
 		}
 
