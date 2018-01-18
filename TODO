@@ -1,11 +1,9 @@
-2. implement edit session (50%)
+2. implement edit class (50%)
 3. admin students (basic)
-4. admin sessions (basic)
+4. admin classes (basic)
 5. implement register interface
 6. deploy on VM (50%)
 
 
 //TODO change teacher arrays to arrays of objects {_id:, username:, firstname: , lastname:  }
-//TODO change session arrays in users to {_id: , sessionname: }
-//TODO standardise to teacher not instructor across code base
-//TODO change session to class across codebase
+//TODO change class arrays in users to {_id: , classname: }

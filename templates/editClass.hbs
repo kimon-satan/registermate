@@ -4,13 +4,13 @@
 	<div class="container-fluid">
 		{{> topbar}}
 		<h1>Registermate</h1>
-		<h3>Edit session</h3>
+		<h3>Edit class</h3>
 
 		<div class="form-group form-inline" style="margin-top: 50px">
 
 			<div>
-				<label for="sessionInput">Select a session: </label>
-				<select class="form-control" id="sessionInput">
+				<label for="classInput">Select a class: </label>
+				<select class="form-control" id="classInput">
 						<option value="none">none</option>
 				</select>
 			</div>
@@ -18,25 +18,25 @@
 			<div class="panel panel-default panel-danger" style="margin-top: 30px">
 				<div class="panel-heading">Danger zone</div>
 				<div class="panel-body">
-					<input class="btn btn-danger" style="margin-left: 20px" id="removeSession" type="button" value="Remove this session">
+					<input class="btn btn-danger" style="margin-left: 20px" id="removeClass" type="button" value="Remove this class">
 				</div>
 			</div>
 
-			<h4>Add instructors:</h4>
+			<h4>Add teachers:</h4>
 			<div style="margin-top: 30px">
 				<label for="department">Department: </label>
 				<select class="form-control" id="departmentInput">
 					<option value="none">none</option>
 				</select>
-				<label for="instructor">Instructor: </label>
-				<select class="form-control" id="instructorInput">
+				<label for="teacher">Teacher: </label>
+				<select class="form-control" id="teacherInput">
 					<option value="none">none</option>
 				</select>
-				<input class="btn btn-warning" id="addInstructor" type="button" value="Add Instructor">
+				<input class="btn btn-warning" id="addTeacher" type="button" value="Add Teacher">
 			</div>
 
 			<div style="margin-top: 30px">
-				<h4>Session instructors</h4>
+				<h4>Class teachers</h4>
 				<table class="table table-bordered">
 					<thead class="table table-bordered">
 						<tr>
@@ -44,7 +44,7 @@
 							<th>Actions</th>
 						</tr>
 					</thead>
-					<tbody class="table table-bordered" id="instructorsTable"></tbody>
+					<tbody class="table table-bordered" id="teachersTable"></tbody>
 				</table>
 			</div>
 
@@ -61,11 +61,11 @@ use one line per student
 				</textarea>
 			</div>
 			<div style="margin-top: 20px">
-				<input class="btn btn-warning" id="addStudents" type="button" value="Add students to session">
+				<input class="btn btn-warning" id="addStudents" type="button" value="Add students to class">
 			</div>
 
 				<div style="margin-top: 50px">
-					<h4>Session students</h4>
+					<h4>Class students</h4>
 					<table class="table table-bordered">
 						<thead class="table table-bordered">
 							<tr class="table-bordered">
@@ -85,5 +85,5 @@ use one line per student
 			</div>
 
 </body>
-<script src="clientscripts/editSession.js"></script>
+<script src="clientscripts/editClass.js"></script>
 </html>

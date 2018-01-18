@@ -4,14 +4,14 @@
 	<div class="container-fluid">
 		{{> topbar}}
 		<h1>Registermate</h1>
-		<h3>Create a new session</h3>
+		<h3>Create a new class</h3>
 
 
 
 		<div class="form-group form-inline" style="margin-top: 50px">
 
 			<div style="margin-top: 20px">
-				<label for="typeInput">Select a session type</label>
+				<label for="typeInput">Select a class type</label>
 				<select class="form-control" id="typeInput">
 					<option value="Lecture">Lecture</option>
 					<option value="Seminar">Seminar</option>
@@ -58,11 +58,11 @@
 					<select class="form-control" id="moduleInputMultiple">
 							<option value="none">none</option>
 					</select>
-					<button id="addExisting" class="btn btn-info">add to session</button>
+					<button id="addExisting" class="btn btn-info">add to class</button>
 				</div>
 
 				<div style="margin-top: 20px">
-					<b>Session modules:</b>
+					<b>Class modules:</b>
 					<table  class="table table-bordered">
 						<thead class="table table-bordered">
 							<tr>
@@ -70,7 +70,7 @@
 								<th>Actions</th>
 							</tr>
 						</thead>
-						<tbody class="table table-bordered" id="sessionModules"></tbody>
+						<tbody class="table table-bordered" id="classModules"></tbody>
 					</table>
 				</div>
 			</div>
@@ -89,16 +89,16 @@
 		</div>
 
 			<div style="margin-top: 20px">
-			<b>Session name:</b>
-			<div id="sessionName"></div>
+			<b>Class name:</b>
+			<div id="className"></div>
 			</div>
 
 
 			<div style="margin-top: 30px; text-align: center">
-				<input class="btn btn-danger btn-lg" id="createSession" type="button" value="Create new session">
+				<input class="btn btn-danger btn-lg" id="createClass" type="button" value="Create new class">
 			</div>
 		</div>
 	</div>
-	<script src="clientscripts/createSession.js"></script>
+	<script src="clientscripts/createClass.js"></script>
 </body>
 </html>

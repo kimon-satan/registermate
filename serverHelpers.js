@@ -2,7 +2,7 @@ const pwhasher = require('password-hash-and-salt');
 const monk = require('monk');
 const db = monk("localhost:27017/registermate");
 const users = db.get('users');
-const sessions = db.get('sessions');
+const classes = db.get('classes');
 
 exports.saltAndHash = function(pw)
 {
@@ -72,7 +72,7 @@ exports.authenticateUser = function(ud,db,requireAdmin)
 
 }
 
-exports.authenticateForSession = function(user, session_id)
+exports.authenticateForClass = function(user, class_id)
 {
 	//user is {password, username}
 	var p = new Promise(function(resolve, reject)
@@ -86,9 +86,9 @@ exports.authenticateForSession = function(user, session_id)
 
 			if(data.valid)
 			{
-				//find the session
+				//find the class
 				role = data.role;
-				return sessions.findOne(session_id);
+				return classes.findOne(class_id);
 			}
 			else
 			{
@@ -100,12 +100,12 @@ exports.authenticateForSession = function(user, session_id)
 		{
 			if(data == null)
 			{
-				//couldn't find the session
-				reject("Session not found");
+				//couldn't find the class
+				reject("Class not found");
 			}
 			else
 			{
-				//check the user is attached to session or is admin
+				//check the user is attached to class or is admin
 				if(data.teachers.includes(user.username) || role == "admin")
 				{
 					//find the teacher

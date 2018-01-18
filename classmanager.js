@@ -2,26 +2,24 @@ const helpers = require('./serverHelpers.js');
 const monk = require('monk');
 const db = monk("localhost:27017/registermate");
 const users = db.get('users');
-const sessions = db.get('sessions');
+const classes = db.get('classes');
 const departmentData = db.get('departmentData')
 const fs = require('fs');
 var departmentList = [];
 
 
-//Sessions DB
+//Classs DB
 /*
 {
 department: ,
-modules: [],
-sessionname: ,
+modules: [], classname: ,
 term: ,
 students: [],
-teachers: [],
-sessionarray: [date, date, blank, blank, blank, etc... ]
+teachers: [], classarray: [date, date, blank, blank, blank, etc... ]
 }
 */
 
-function SessionManager(app)
+function ClassManager(app)
 {
 	//LOAD THE HARDCODED DEPARTMENT DATA
 	fs.readFile(__dirname + "/config/departmentinfo.json",
@@ -65,19 +63,19 @@ function SessionManager(app)
 
 	});
 
-	app.get('/usersessions', (req,res) =>
+	app.get('/userclasses', (req,res) =>
 	{
-		//get a list of sessions for a user
-		sessions.find({teachers: req.session.username},
-			{sort: {sessionname: 1},fields: {sessionname: 1}})
+		//get a list of classes for a user
+		classes.find({teachers: req.session.username},
+			{sort: {classname: 1},fields: {classname: 1}})
 		.then((doc)=>{
 			res.send(doc);
 		})
 	})
 
-	app.get('/sessiondoc', (req,res) =>
+	app.get('/classdoc', (req,res) =>
 	{
-		//get a session document
+		//get a class document
 		var auth = {
 			username: req.session.username,
 			password: req.session.password
@@ -85,10 +83,10 @@ function SessionManager(app)
 
 		var role;
 
-		helpers.authenticateForSession(auth, req.query._id)
+		helpers.authenticateForClass(auth, req.query._id)
 
 		.then((data) =>{
-			return sessions.findOne(req.query._id);
+			return classes.findOne(req.query._id);
 		})
 
 		.then((data) =>{
@@ -101,7 +99,7 @@ function SessionManager(app)
 		})
 	})
 
-	app.post('/createsession', (req,res) =>{
+	app.post('/createclass', (req,res) =>{
 
 		var auth =
 		{
@@ -115,8 +113,8 @@ function SessionManager(app)
 
 			if(data.valid)
 			{
-				//check the session doesn't already exist
-				return sessions.findOne(req.body);
+				//check the class doesn't already exist
+				return classes.findOne(req.body);
 			}
 			else
 			{
@@ -132,21 +130,21 @@ function SessionManager(app)
 				var s = req.body;
 				s.teachers = [req.session.username];
 
-				return sessions.insert(s);
-				//add the session to the teacher
+				return classes.insert(s);
+				//add the class to the teacher
 
 
 			}
 			else
 			{
-				return Promise.reject("Error: session already exists");
+				return Promise.reject("Error: class already exists");
 			}
 		})
 
 		.then((doc)=>{
-			//add the session id to the teacher
-			users.update({username: req.session.username},{$addToSet: {sessions: doc._id}});
-			res.send("new session created");
+			//add the class id to the teacher
+			users.update({username: req.session.username},{$addToSet: {classes: doc._id}});
+			res.send("new class created");
 		})
 
 		.catch((err)=>{
@@ -155,9 +153,9 @@ function SessionManager(app)
 
 	})
 
-	app.post('/removefromsessions', (req,res) =>
+	app.post('/removefromclasss', (req,res) =>
 	{
-		//removes a user from all sessions
+		//removes a user from all classes
 		//we actually need to do this before removing users
 		var auth = {
 			username: req.session.username,
@@ -170,8 +168,8 @@ function SessionManager(app)
 
 			if(data.valid)
 			{
-				//check the session doesn't already exist
-				return sessions.update({},{$pull: {teachers: req.body.username}, multi: true});
+				//check the class doesn't already exist
+				return classes.update({},{$pull: {teachers: req.body.username}, multi: true});
 			}
 			else
 			{
@@ -181,7 +179,7 @@ function SessionManager(app)
 
 		.then((doc)=>
 		{
-			return users.update({username: req.body.username},{$set: {sessions: []}});
+			return users.update({username: req.body.username},{$set: {classes: []}});
 		})
 
 		.then((doc)=>{
@@ -194,20 +192,20 @@ function SessionManager(app)
 
 	})
 
-	app.post('/addinstructor', (req,res) =>
+	app.post('/addteacher', (req,res) =>
 	{
-		//add an instructor to a session
-		//get a session document
+		//add an teacher to a class
+		//get a class document
 		var auth = {
 			username: req.session.username,
 			password: req.session.password
 		}
 
-		helpers.authenticateForSession(auth, req.query._id)
+		helpers.authenticateForClass(auth, req.query._id)
 
 		.then((data)=>{
 			//find the teacher
-			return users.findOne(req.body.instructor);
+			return users.findOne(req.body.teacher);
 		})
 
 		.then((data)=>
@@ -219,14 +217,14 @@ function SessionManager(app)
 			}
 			else
 			{
-				//add the teacher and send the session doc
-				users.update(data._id,{$addToSet: {sessions: req.body.session}});
-				return sessions.update(req.body.session, {$addToSet: {teachers: data.username}});
+				//add the teacher and send the class doc
+				users.update(data._id,{$addToSet: {classes: req.body.class}});
+				return classes.update(req.body.class, {$addToSet: {teachers: data.username}});
 			}
 		})
 
 		.then((data) =>{
-			return sessions.findOne(req.body.session);
+			return classes.findOne(req.body.class);
 		})
 
 		.then((data) =>{
@@ -238,25 +236,24 @@ function SessionManager(app)
 		})
 	})
 
-	app.post('/removeinstructor', (req,res) =>
+	app.post('/removeteacher', (req,res) =>
 	{
 		//TODO change teacher arrays to arrays of objects {_id:, username:, firstname: , lastname:  }
-		//TODO change session arrays in users to {_id: , sessionname: }
-		//TODO standardise to teacher not instructor across code base
-		//TODO change session to class across codebase 
+		//TODO change class arrays in users to {_id: , classname: }
+		//TODO change class to class across codebase
 
-		//add an instructor to a session
-		//get a session document
+		//add an teacher to a class
+		//get a class document
 		var auth = {
 			username: req.session.username,
 			password: req.session.password
 		}
 
-		helpers.authenticateForSession(auth, req.query._id)
+		helpers.authenticateForClass(auth, req.query._id)
 
 		.then((data)=>{
 			//find the teacher
-			return users.findOne({username: req.body.instructor});
+			return users.findOne({username: req.body.teacher});
 		})
 
 		.then((data)=>
@@ -269,15 +266,15 @@ function SessionManager(app)
 			else
 			{
 				//remove the teacher
-				users.update(data._id,{$pull: {sessions: req.body.session}});
-				return sessions.update(req.body.session, {$pull: {teachers: data.username}});
+				users.update(data._id,{$pull: {classes: req.body.class}});
+				return classes.update(req.body.class, {$pull: {teachers: data.username}});
 			}
 		})
 
 		.then((data) =>
 		{
-			//get the updated session
-			return sessions.findOne(req.body.session);
+			//get the updated class
+			return classes.findOne(req.body.class);
 		})
 
 		.then((data) =>
@@ -293,4 +290,4 @@ function SessionManager(app)
 
 }
 
-module.exports = SessionManager;
+module.exports = ClassManager;

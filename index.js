@@ -8,7 +8,7 @@ const cookieSession = require('cookie-session');
 const hbs = require('hbs');
 const nodemailer = require('nodemailer');
 const accounts = require('./accounts.js');
-const sessionManager = require('./sessionmanager.js');
+const classManager = require('./classmanager.js');
 const argv = require('yargs').argv;
 
 const PORT = 8000;
@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use(cookieSession({
-	name: 'session',
+	name: 'class',
 	keys: ["myfirstkey"],
 
 	// Cookie Options
@@ -70,7 +70,7 @@ app.listen(PORT, () => console.log('Example app listening on port ' + PORT + '!'
 //////////////////////////////////////INIT SUBMODULES//////////////////////////////////////
 
 const accountsApp = new accounts(app);
-const sessionsApp = new sessionManager(app);
+const classsApp = new classManager(app);
 
 if(argv.generateUsers)
 {
@@ -125,11 +125,11 @@ app.get('/adminusers', (req ,res) => {
 	})
 })
 
-app.get('/createsession', (req, res) =>
+app.get('/createclass', (req, res) =>
 {
 	if (req.session.username != null && req.session.password != null)
 	{
-		res.render(__dirname + '/templates/createSession.hbs', {SERVER_URL: URL});
+		res.render(__dirname + '/templates/createClass.hbs', {SERVER_URL: URL});
 	}
 	else
 	{
@@ -137,11 +137,11 @@ app.get('/createsession', (req, res) =>
 	}
 })
 
-	app.get('/editsession' , (req, res) => {
+	app.get('/editclass' , (req, res) => {
 
 		if (req.session.username != null && req.session.password != null)
 		{
-			res.render(__dirname + '/templates/editSession.hbs', {SERVER_URL: URL});
+			res.render(__dirname + '/templates/editClass.hbs', {SERVER_URL: URL});
 		}
 		else
 		{

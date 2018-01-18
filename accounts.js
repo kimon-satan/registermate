@@ -25,7 +25,7 @@ function Accounts(app)
 				surname:req.body.surname,
 				hash: data,
 				role: "teacher",
-				sessions: [],
+				classes: [],
 				email: req.body.email
 			}
 
@@ -372,7 +372,7 @@ function Accounts(app)
 
 	})
 
-	app.get('/instructors', (req, res) =>{
+	app.get('/teachers', (req, res) =>{
 		//Can only be carried out by admin
 
 		var auth = {
@@ -447,7 +447,7 @@ Accounts.prototype.generateFakeAccounts = function(numUsers)
 			for(var i = numOld; i < numOld + numNew; i++)
 			{
 				let d = temp[i].split(",");
-				let ud = {username: d[3], email: d[2], firstname: d[1], surname: d[0], hash: "", role: "teacher", sessions: []};
+				let ud = {username: d[3], email: d[2], firstname: d[1], surname: d[0], hash: "", role: "teacher", classes: []};
 				ud.department = (Math.random() > 0.5)? "Computing" : "Art";
 				parsed.push(ud);
 			}

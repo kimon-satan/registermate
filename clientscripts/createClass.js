@@ -1,10 +1,10 @@
 
 $(document).ready(function(){
 
-	var sessionModules = [];
+	var classModules = [];
 	var moduleList = [];
 	var isMultiple = false;
-	var sessionDoc = {};
+	var classDoc = {};
 
 	$.get("/departmentlist",function(res)
 	{
@@ -42,16 +42,16 @@ $(document).ready(function(){
 			$('#modulePanel').addClass("hidden");
 			$('#moduleSinglePanel').removeClass("hidden");
 		}
-		updateSessionDoc();
+		updateClassDoc();
 	})
 
 	$("#termInput, #moduleInputSingle, #typeInput").on("change", function(e)
 	{
-		updateSessionDoc();
+		updateClassDoc();
 	});
 
 	$("#customLabel").on("keyup", function(e){
-		updateSessionDoc();
+		updateClassDoc();
 	})
 
 	$("#addExisting").on("click", function(e)
@@ -61,11 +61,11 @@ $(document).ready(function(){
 		if(m != "none")
 		{
 			//check module hasn't already been added
-			if(!sessionModules.includes(moduleList[m]))
+			if(!classModules.includes(moduleList[m]))
 			{
-				sessionModules.push(moduleList[m]);
-				updateSessionModules();
-				updateSessionDoc();
+			 classModules.push(moduleList[m]);
+				updateClassModules();
+				updateClassDoc();
 			}
 			else{
 				alert("Module already added");
@@ -78,14 +78,14 @@ $(document).ready(function(){
 	})
 
 
-	$("#createSession").on("click", function(e)
+	$("#createClass").on("click", function(e)
 	{
 
-		if(validateSessionDoc())
+		if(validateClassDoc())
 		{
-			var req = $.post(server_url + "/createsession", sessionDoc ,function(res){
+			var req = $.post(server_url + "/createclass", classDoc ,function(res){
 				//TODO move to next stage
-				alert("Congratulations !\nYour session has been created.\nNow lets add some students and teachers...");
+				alert("Congratulations !\nYour class has been created.\nNow lets add some students and teachers...");
 
 			});
 
@@ -95,49 +95,49 @@ $(document).ready(function(){
 
 			req.done(function()
 			{
-				window.location = server_url + "/editsession";
+				window.location = server_url + "/editclass";
 			})
 		}
 
 	})
 
 	$(document).on("click", ".remove", function(e){
-		sessionModules.splice(e.target.id, 1);
-		updateSessionModules();
-		updateSessionDoc();
+	 classModules.splice(e.target.id, 1);
+		updateClassModules();
+		updateClassDoc();
 	})
 
-	function updateSessionDoc()
+	function updateClassDoc()
 	{
-		sessionDoc.department = $('#departmentInput').val();
+	 classDoc.department = $('#departmentInput').val();
 
 		if(isMultiple)
 		{
-			sessionDoc.modules = sessionModules;
+		 classDoc.modules = classModules;
 		}
 		else
 		{
 			var m = $('#moduleInputSingle').val();
-			sessionDoc.module = moduleList[m];
+		 classDoc.module = moduleList[m];
 		}
-		sessionDoc.sessiontype = $('#typeInput').val();
-		sessionDoc.sessionname = $('#newSession').val();
-		sessionDoc.term = $('#termInput').val();
-		sessionDoc.customLabel = $('#customLabel').val();
+	 classDoc.classtype = $('#typeInput').val();
+	 classDoc.classname = $('#newClass').val();
+	 classDoc.term = $('#termInput').val();
+	 classDoc.customLabel = $('#customLabel').val();
 
-		updateSessionName();
+		updateClassName();
 	}
 
-	function updateSessionName()
+	function updateClassName()
 	{
-		console.log(sessionDoc);
+		console.log(classDoc);
 		var sn = "";
 		if(isMultiple)
 		{
-			for(var i = 0; i < sessionDoc.modules.length; i++)
+			for(var i = 0; i < classDoc.modules.length; i++)
 			{
-				sn += sessionDoc.modules[i].code;
-				if(i < sessionDoc.modules.length -1)
+				sn += classDoc.modules[i].code;
+				if(i < classDoc.modules.length -1)
 				{
 					sn += "&";
 				}
@@ -145,27 +145,27 @@ $(document).ready(function(){
 		}
 		else
 		{
-			if(sessionDoc.module != undefined)sn += sessionDoc.module.title;
+			if(classDoc.module != undefined)sn += classDoc.module.title;
 		}
 
 		sn += ": "
-		if(sessionDoc.sessiontype != undefined)sn += sessionDoc.sessiontype;
-		if(sessionDoc.term != "none")sn += " - " + sessionDoc.term;
-		if(sessionDoc.customLabel.length > 0)sn += " - " + sessionDoc.customLabel;
+		if(classDoc.classtype != undefined)sn += classDoc.classtype;
+		if(classDoc.term != "none")sn += " - " + classDoc.term;
+		if(classDoc.customLabel.length > 0)sn += " - " + classDoc.customLabel;
 
-		sessionDoc.sessionname = sn;
+	 classDoc.classname = sn;
 
 
-		$("#sessionName").empty();
-		$("#sessionName").append(sessionDoc.sessionname);
+		$("#className").empty();
+		$("#className").append(classDoc.classname);
 	}
 
-	function validateSessionDoc()
+	function validateClassDoc()
 	{
 		//validate record
 		//department
 		//module or modules
-		if(sessionDoc.department == "none" || sessionDoc.department == undefined)
+		if(classDoc.department == "none" || classDoc.department == undefined)
 		{
 			alert("You must set a value for department");
 			return false;
@@ -173,7 +173,7 @@ $(document).ready(function(){
 
 		if(isMultiple)
 		{
-			if(sessionDoc.modules.length < 0)
+			if(classDoc.modules.length < 0)
 			{
 				alert("You must add at least one module");
 				return false;
@@ -181,7 +181,7 @@ $(document).ready(function(){
 		}
 		else
 		{
-			if(sessionDoc.module == "none" || sessionDoc.module == undefined)
+			if(classDoc.module == "none" || classDoc.module == undefined)
 			{
 				alert("You must set a module");
 				return false;
@@ -191,21 +191,21 @@ $(document).ready(function(){
 		return true;
 	}
 
-	function updateSessionModules()
+	function updateClassModules()
 	{
-		$('#sessionModules').empty();
-		for(var i = 0; i < sessionModules.length; i++)
+		$('#classModules').empty();
+		for(var i = 0; i < classModules.length; i++)
 		{
 			let m = "";
-			if(sessionModules[i].code != undefined)
+			if(classModules[i].code != undefined)
 			{
-				m +=  sessionModules[i].code + ", "
+				m +=  classModules[i].code + ", "
 			}
-			m += sessionModules[i].title;
+			m += classModules[i].title;
 			var row = $("<tr></tr>");
 			row.append("<td>" + m + "</td>");
 			row.append("<td><button class='btn btn-danger btn-sm remove' id='" + i + "'>remove</button></td>")
-			$('#sessionModules').append(row);
+			$('#classModules').append(row);
 		}
 	}
 

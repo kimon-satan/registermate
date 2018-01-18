@@ -49,7 +49,7 @@ $(document).ready(function()
 		var c = confirm("Are you sure you want to purge " + un + " ?");
 		if(c)
 		{
-			$.post(server_url + "/removefromsessions", {_id: _id}, function(res)
+			$.post(server_url + "/removefromclasss", {_id: _id}, function(res)
 			{
 				alert(res);
 			})
@@ -78,7 +78,7 @@ function updateTable(filter)
 			var col = $("<td></td>");
 			col.append("<button class='btn btn-warning btn-xs hspaced role'>change role</button>");
 			col.append("<button class='btn btn-danger btn-xs hspaced remove'>remove user</button>");
-			col.append("<button class='btn btn-danger btn-xs hspaced purge'>purge sessions</button>");
+			col.append("<button class='btn btn-danger btn-xs hspaced purge'>purge classes</button>");
 			row.append(col);
 			$('#usertable').append(row);
 		}
