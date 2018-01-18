@@ -1,4 +1,8 @@
 const pwhasher = require('password-hash-and-salt');
+const monk = require('monk');
+const db = monk("localhost:27017/registermate");
+const users = db.get('users');
+const sessions = db.get('sessions');
 
 exports.saltAndHash = function(pw)
 {
@@ -66,6 +70,60 @@ exports.authenticateUser = function(ud,db,requireAdmin)
 
 	return p;
 
+}
+
+exports.authenticateForSession = function(user, session_id)
+{
+	//user is {password, username}
+	var p = new Promise(function(resolve, reject)
+	{
+
+		var role;
+
+		exports.authenticateUser(user, users, false)
+
+		.then(function(data){
+
+			if(data.valid)
+			{
+				//find the session
+				role = data.role;
+				return sessions.findOne(session_id);
+			}
+			else
+			{
+				return Promise.reject(data.info);
+			}
+		})
+
+		.then((data)=>
+		{
+			if(data == null)
+			{
+				//couldn't find the session
+				reject("Session not found");
+			}
+			else
+			{
+				//check the user is attached to session or is admin
+				if(data.teachers.includes(user.username) || role == "admin")
+				{
+					//find the teacher
+					resolve("Authorised");
+				}
+				else
+				{
+					reject("Unauthorised request");
+				}
+			}
+
+		})
+
+		.catch((err) => {
+			reject(err);
+		});
+	});
+	return p;
 }
 
 exports.generateToken = function()

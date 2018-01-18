@@ -51,11 +51,13 @@ function SessionManager(app)
 
 	app.get('/departmentlist', (req,res) =>
 	{
+		//get the list of departments
 		res.send(departmentList);
 	});
 
 	app.get('/modulelist', (req,res) =>
 	{
+		//get a list of modules for a department
 		departmentData.find(req.query,{sort: {code: 1}, fields: {title: 1, code: 1}})
 		.then((doc) => {
 			res.send(doc);
@@ -63,7 +65,9 @@ function SessionManager(app)
 
 	});
 
-	app.get('/usersessions', (req,res) =>{
+	app.get('/usersessions', (req,res) =>
+	{
+		//get a list of sessions for a user
 		sessions.find({teachers: req.session.username},
 			{sort: {sessionname: 1},fields: {sessionname: 1}})
 		.then((doc)=>{
@@ -71,9 +75,36 @@ function SessionManager(app)
 		})
 	})
 
+	app.get('/sessiondoc', (req,res) =>
+	{
+		//get a session document
+		var auth = {
+			username: req.session.username,
+			password: req.session.password
+		}
+
+		var role;
+
+		helpers.authenticateForSession(auth, req.query._id)
+
+		.then((data) =>{
+			return sessions.findOne(req.query._id);
+		})
+
+		.then((data) =>{
+			console.log(data);
+			res.send(data);
+		})
+
+		.catch((err)=>{
+			res.status(400).send(err);
+		})
+	})
+
 	app.post('/createsession', (req,res) =>{
 
-		var auth = {
+		var auth =
+		{
 			username: req.session.username,
 			password: req.session.password
 		}
@@ -124,7 +155,10 @@ function SessionManager(app)
 
 	})
 
-	app.post('/removefromsessions', (req,res) =>{
+	app.post('/removefromsessions', (req,res) =>
+	{
+		//removes a user from all sessions
+		//we actually need to do this before removing users
 		var auth = {
 			username: req.session.username,
 			password: req.session.password
@@ -137,7 +171,7 @@ function SessionManager(app)
 			if(data.valid)
 			{
 				//check the session doesn't already exist
-				return sessions.update({},{$pull: {teachers: req.body.username}});
+				return sessions.update({},{$pull: {teachers: req.body.username}, multi: true});
 			}
 			else
 			{
@@ -145,9 +179,9 @@ function SessionManager(app)
 			}
 		})
 
-		.then((doc)=>{
+		.then((doc)=>
+		{
 			return users.update({username: req.body.username},{$set: {sessions: []}});
-
 		})
 
 		.then((doc)=>{
@@ -158,7 +192,102 @@ function SessionManager(app)
 			res.status(400).send(doc);
 		})
 
+	})
 
+	app.post('/addinstructor', (req,res) =>
+	{
+		//add an instructor to a session
+		//get a session document
+		var auth = {
+			username: req.session.username,
+			password: req.session.password
+		}
+
+		helpers.authenticateForSession(auth, req.query._id)
+
+		.then((data)=>{
+			//find the teacher
+			return users.findOne(req.body.instructor);
+		})
+
+		.then((data)=>
+		{
+			if(data == null)
+			{
+				//couldn't find the teacher
+				return Promise.reject("Teacher not found");
+			}
+			else
+			{
+				//add the teacher and send the session doc
+				users.update(data._id,{$addToSet: {sessions: req.body.session}});
+				return sessions.update(req.body.session, {$addToSet: {teachers: data.username}});
+			}
+		})
+
+		.then((data) =>{
+			return sessions.findOne(req.body.session);
+		})
+
+		.then((data) =>{
+			res.send(data);
+		})
+
+		.catch((err)=>{
+			res.status(400).send(err);
+		})
+	})
+
+	app.post('/removeinstructor', (req,res) =>
+	{
+		//TODO change teacher arrays to arrays of objects {_id:, username:, firstname: , lastname:  }
+		//TODO change session arrays in users to {_id: , sessionname: }
+		//TODO standardise to teacher not instructor across code base
+		//TODO change session to class across codebase 
+
+		//add an instructor to a session
+		//get a session document
+		var auth = {
+			username: req.session.username,
+			password: req.session.password
+		}
+
+		helpers.authenticateForSession(auth, req.query._id)
+
+		.then((data)=>{
+			//find the teacher
+			return users.findOne({username: req.body.instructor});
+		})
+
+		.then((data)=>
+		{
+			if(data == null)
+			{
+				//couldn't find the teacher
+				return Promise.reject("Teacher not found");
+			}
+			else
+			{
+				//remove the teacher
+				users.update(data._id,{$pull: {sessions: req.body.session}});
+				return sessions.update(req.body.session, {$pull: {teachers: data.username}});
+			}
+		})
+
+		.then((data) =>
+		{
+			//get the updated session
+			return sessions.findOne(req.body.session);
+		})
+
+		.then((data) =>
+		{
+			res.send(data);
+		})
+
+		.catch((err)=>{
+			res.status(400).send(err);
+		})
 	})
 
 
