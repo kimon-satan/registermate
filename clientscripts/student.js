@@ -8,9 +8,13 @@ $(document).ready(function()
 
 		if(r.test(un))
 		{
-			$.get("/findmyclass",{username: un}, function(res)
+			var req = $.get("/findmyclass",{username: un}, function(res)
 			{
 				window.location = "/passwordregister/" + un + "/" + res;
+			})
+			
+			req.fail(function(res){
+				alert(res);
 			})
 		}
 		else{

@@ -108,8 +108,11 @@ function Accounts(app)
 	)
 	app.get('/logout', (req, res) =>
 	{
-		req.session = null;
-		res.redirect(URL + '/teacher');
+		if(req.session.studentname == undefined)
+		{
+			req.session = null;
+			res.redirect(URL + '/teacher');
+		}
 	})
 
 	/////////////////////////////////////// RESET STUFF //////////////////////////////////////

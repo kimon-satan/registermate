@@ -22,10 +22,12 @@ app.use(bodyParser.json());
 app.use(cookieSession({
 	name: 'class',
 	keys: ["myfirstkey"],
-
+	secret: "whydontyoutrustme",
 	// Cookie Options
-	maxAge: 24 * 60 * 60 * 1000 // 24 hours
+	maxAge: 1000 * 60 * 24 * 24 // 24 hours
 }))
+
+app.set('trust proxy', 1) // trust first proxy ???
 
 db.then(() => {
 	console.log('Connected correctly to server')
@@ -79,10 +81,27 @@ if(argv.generateUsers)
 	accountsApp.generateFakeAccounts(argv.generateUsers);
 }
 
+// This allows you to set req.session.maxAge to let certain sessions
+// have a different value than the default.
+app.use(function (req, res, next) {
+  req.sessionOptions.maxAge = req.session.maxAge || req.sessionOptions.maxAge
+  next()
+})
+
 ///////////////////////////////////////FRONT PAGES////////////////////////////////////
 
 app.get('/', (req, res) => res.redirect(URL + '/student/'))
-app.get('/student', (req, res) => res.render(__dirname + '/templates/student.hbs', {SERVER_URL: URL}))
+app.get('/student', (req, res) =>
+{
+	if(req.session.studentname == null)
+	{
+		res.render(__dirname + '/templates/student.hbs', {SERVER_URL: URL})
+	}
+	else
+	{
+		res.render(__dirname + '/templates/success.hbs', {SERVER_URL: URL})
+	}
+})
 app.get('/teacher', (req, res) =>
 	{
 

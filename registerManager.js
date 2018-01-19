@@ -217,15 +217,23 @@ function RegisterManager(app)
 
 	app.get("/passwordregister/:username/:classid", (req,res) =>
 	{
-		var username = req.params.username;
-		var classid = req.params.classid;
 
-		classes.findOne(classid)
+		if(req.session.studentname == undefined)
+		{
+			var username = req.params.username;
+			var classid = req.params.classid;
 
-		.then((doc)=>{
-			res.render(__dirname + '/templates/passwordRegister.hbs',
-			{SERVER_URL: URL, username: username, classid: classid, classname: doc.classname});
-		})
+			classes.findOne(classid)
+
+			.then((doc)=>{
+				res.render(__dirname + '/templates/passwordRegister.hbs',
+				{SERVER_URL: URL, username: username, classid: classid, classname: doc.classname});
+			})
+		}
+		else
+		{
+			res.render(__dirname + '/templates/success.hbs', {SERVER_URL: URL});
+		}
 
 	})
 
@@ -234,6 +242,12 @@ function RegisterManager(app)
 
 		var student_id;
 		var classDoc;
+
+		if(req.session.studentname != undefined)
+		{
+			res.status(400).send("you've already registered");
+			return;
+		}
 
 		students.findOne({username: req.body.username})
 
@@ -276,7 +290,11 @@ function RegisterManager(app)
 
 		.then((doc)=>
 		{
+			req.session.studentname = req.body.username;
+			//FIXME hmm putting this back
+			req.sessionOptions.maxAge = 1000; //just one second
 			res.render(__dirname + '/templates/success.hbs',{SERVER_URL: URL});
+			return Promise.resolve();
 		})
 
 		.catch((err)=>
