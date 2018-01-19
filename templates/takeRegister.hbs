@@ -53,10 +53,10 @@
 		<div id="openPanel" class="panel panel-success" style="margin-top: 30px">
 			<div class="panel-heading"><h2>The register is open</h2></div>
 			<div class="panel-body">
-				<p><b>Time open: </b></p>
-				<p><b>Total students: </b></p>
-				<p><b>Total present: </b></p>
-				<p><b>Attendence: </b></p>
+				<div id="timeOpen"><p><b>Time open: </b>00:00:00</p></div>
+				<div id="numStudents"><p><b>Total students: </b></p></div>
+				<div id="numPresent"><p><b>Total present: </b></p></div>
+				<div id="attendance"><p><b>Attendence: </b></p></div>
 			</div>
 		</div>
 
@@ -80,7 +80,7 @@
 
 		<div class="table-responsive">
 			<table class="table table-bordered table-condensed">
-				<thead class="table table-bordered">
+				<thead class="table table-bordered" id="registerHeader">
 					<tr class="table-bordered">
 						<th>student</th>
 						<th>session 1</th>
@@ -95,7 +95,7 @@
 						<th>session 10</th>
 					</tr>
 				</thead>
-				<tbody class="table table-bordered" id="registerTable">
+				<tbody class="table table-bordered" id="registerBody">
 				</tbody>
 
 			</table>

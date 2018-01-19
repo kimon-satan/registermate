@@ -1,5 +1,13 @@
 
-3. implement register interface ! (30%)
+3. implement register interface ! (90%)
+	- sessions with expire to prevent multiple logins
+	- click to register
+	- late functionality
+	- email absentees
+	- download csv
+	- auto-close after 60mins
+	- warnings for stupid actions
+
 4. check VM deployment
 5. admin students (basic)
 	- just list them + add and remove
@@ -25,3 +33,4 @@ attendance
 U = unregistered
 A = absent
 L = late
+X = present

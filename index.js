@@ -9,6 +9,7 @@ const hbs = require('hbs');
 const nodemailer = require('nodemailer');
 const accounts = require('./accounts.js');
 const classManager = require('./classmanager.js');
+const registerManager = require('./registermanager.js');
 const argv = require('yargs').argv;
 
 const PORT = 8000;
@@ -70,7 +71,8 @@ app.listen(PORT, () => console.log('Example app listening on port ' + PORT + '!'
 //////////////////////////////////////INIT SUBMODULES//////////////////////////////////////
 
 const accountsApp = new accounts(app);
-const classsApp = new classManager(app);
+const classApp = new classManager(app);
+const registerApp = new registerManager(app);
 
 if(argv.generateUsers)
 {
@@ -142,19 +144,6 @@ app.get('/editclass' , (req, res) => {
 	if (req.session.username != null && req.session.password != null)
 	{
 		res.render(__dirname + '/templates/editClass.hbs', {SERVER_URL: URL});
-	}
-	else
-	{
-		res.render(__dirname + '/templates/login.hbs', {SERVER_URL: URL});
-	}
-
-})
-
-app.get('/takeregister' , (req, res) => {
-
-	if (req.session.username != null && req.session.password != null)
-	{
-		res.render(__dirname + '/templates/takeRegister.hbs', {SERVER_URL: URL});
 	}
 	else
 	{
