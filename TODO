@@ -1,8 +1,5 @@
 
-
-2. implement edit class (99%)
-	- import data from an existing class
-3. implement register interface !
+3. implement register interface ! (30%)
 4. check VM deployment
 5. admin students (basic)
 	- just list them + add and remove
@@ -11,7 +8,10 @@
 
 For later ...
 
+- Deal with wrong class registration (student side)
+- Deal with opening register when students are open for another class
 - Dealing with name discrepancies.
+- import data from an existing class
 
 ///////////////////////////////
 

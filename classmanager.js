@@ -140,6 +140,8 @@ function ClassManager(app)
 				//okay we can make the class
 				var s = req.body;
 				s.sessionarray = [];
+				s.classpass = null;
+				s.currentsession = 0;
 				//default to 10 sessions
 				for(var i = 0; i < 10; i++)
 				{
@@ -355,6 +357,7 @@ function ClassManager(app)
 						{
 							createdStudents += 1;
 							student.departments = [classDoc.department];
+							student.currentclass = "";
 							return students.insert(student);
 						}
 						else
