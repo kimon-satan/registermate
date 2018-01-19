@@ -5,6 +5,104 @@
 		{{> topbar}}
 		<h1>Registermate</h1>
 		<h3>Take the register</h3>
+
+		<div class="form-group form-inline" style="margin-top: 30px">
+
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<label for="classInput">Select a class:</label>
+				<select class="form-control" id="classInput">
+						<option value="none">none</option>
+				</select>
+
+				<label for="sessionInput" style="margin-left: 20px">Select a session:</label>
+				<select class="form-control" id="sessionInput">
+						<!-- fill from script -->
+				</select>
+			</div>
+		</div>
+
+		<div  class="panel panel-default" style="margin-top: 30px">
+			<div class="panel-body">
+				<label for="password">Set a one time class pass: </label>
+				<input type="text" class="form-control" id="password" placeholder="password">
+
+				<label for="lateTime" style="margin-left: 20px">Mark students late after: </label>
+				<select type="number" class="form-control" id="lateTime">
+					<option value="never">never</option>
+					<option value=5>5 mins</option>
+					<option value=10>10 mins</option>
+					<option value=15>15 mins</option>
+					<option value=20>20 mins</option>
+					<option value=25>25 mins</option>
+					<option value=30>30 mins</option>
+				</select>
+				<div id="openDiv" style="margin-top: 30px">
+					<label for="start">Open the register: </label>
+					<input class="btn btn-success" id="start" type="button" value="Open">
+				</div>
+				<div id="closeDiv" style="margin-top: 30px">
+					<label for="end">Close the register: </label>
+					<input class="btn btn-danger" id="end" type="button" value="Close">
+					<label for="lateOverride" style="margin-left: 20px">Mark further registerations as late: </label>
+					<input type="checkbox" id="lateOverride">
+				</div>
+			</div>
+		</div>
+
+		<div class="panel panel-success" style="margin-top: 30px">
+			<div class="panel-heading"><h2>The register is open</h2></div>
+			<div class="panel-body">
+				<p><b>Time open: </b></p>
+				<p><b>Total students: </b></p>
+				<p><b>Total present: </b></p>
+				<p><b>Attendence: </b></p>
+			</div>
+		</div>
+
+		<div class="panel panel-danger" style="margin-top: 30px">
+			<div class="panel-heading"><h2>The register is closed</h2></div>
+			<div class="panel-body">
+				<div style="margin-top: 10px">
+					<label for="personalText">Compose an email to the absentees: </label>
+					<br>
+					<textarea id="personalText" rows="10" cols="50">Please catch up on the content of the class by using learn.gold</textarea>
+					<br>
+					<i>just the middle paragraph</i>
+				</div>
+				<label for="lateOverride" style="margin-top: 20px">Send the email to absentees: </label>
+				<input class="btn btn-danger" id="send" type="button" value="Send">
+				<div style="margin-top: 30px">
+					<input class="btn btn-warning" id="download" type="button" value="Download Class Register">
+				</div>
+			</div>
+		</div>
+
+		<div class="table-responsive">
+			<table class="table table-bordered table-condensed">
+				<thead class="table table-bordered">
+					<tr class="table-bordered">
+						<th>student</th>
+						<th>session 1</th>
+						<th>session 2</th>
+						<th>session 3</th>
+						<th>session 4</th>
+						<th>session 5</th>
+						<th>session 6</th>
+						<th>session 7</th>
+						<th>session 8</th>
+						<th>session 9</th>
+						<th>session 10</th>
+					</tr>
+				</thead>
+				<tbody class="table table-bordered" id="registerTable">
+				</tbody>
+
+			</table>
+		</div>
+
 	</div>
+
+
 </body>
 </html>

@@ -137,15 +137,28 @@ app.get('/createclass', (req, res) =>
 	}
 })
 
-	app.get('/editclass' , (req, res) => {
+app.get('/editclass' , (req, res) => {
 
-		if (req.session.username != null && req.session.password != null)
-		{
-			res.render(__dirname + '/templates/editClass.hbs', {SERVER_URL: URL});
-		}
-		else
-		{
-			res.render(__dirname + '/templates/login.hbs', {SERVER_URL: URL});
-		}
+	if (req.session.username != null && req.session.password != null)
+	{
+		res.render(__dirname + '/templates/editClass.hbs', {SERVER_URL: URL});
+	}
+	else
+	{
+		res.render(__dirname + '/templates/login.hbs', {SERVER_URL: URL});
+	}
 
-	})
+})
+
+app.get('/takeregister' , (req, res) => {
+
+	if (req.session.username != null && req.session.password != null)
+	{
+		res.render(__dirname + '/templates/takeRegister.hbs', {SERVER_URL: URL});
+	}
+	else
+	{
+		res.render(__dirname + '/templates/login.hbs', {SERVER_URL: URL});
+	}
+
+})
