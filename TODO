@@ -1,12 +1,27 @@
 
 
-2. implement edit class (95%)
-	- students get department array as property
+2. implement edit class (99%)
 	- import data from an existing class
-	- num sessions
 3. implement register interface !
 4. check VM deployment
 5. admin students (basic)
 	- just list them + add and remove
 6. admin classes (basic)
 	- just list them
+
+For later ...
+
+- Dealing with name discrepancies.
+
+///////////////////////////////
+
+classarray
+
+U = unregistered
+xx/xx/xx = lastopened
+
+attendance
+
+U = unregistered
+A = absent
+L = late

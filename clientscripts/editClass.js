@@ -24,8 +24,15 @@ $(document).ready(function(){
 		{
 			$('#departmentInput').append("<option value='"+ res[i] +"'>" + res[i] + "</option>");
 		}
-
 	});
+
+	//set up num sessions
+
+	for(var i =1; i < 25; i++)
+	{
+		$('#numSessionsInput').append("<option value=" + i + ">" + i +"</option>");
+	}
+	$('#numSessionsInput').val(10);
 
 	$("#departmentInput").on("change", function(e)
 	{
@@ -49,6 +56,7 @@ $(document).ready(function(){
 			classDoc = res;
 			updateTeachers();
 			updateStudents();
+			$('#numSessionsInput').val(classDoc.sessionarray.length);
 		})
 		req.fail(function(err){
 			alert(err);
@@ -56,14 +64,63 @@ $(document).ready(function(){
 
 	});
 
+	$("#numSessionsButton").on("click", function(e)
+	{
+		if(classDoc == undefined)
+		{
+			alert("Choose a class first.");
+			return;
+		}
+
+		var n = $('#numSessionsInput').val();
+		var c;
+
+		if(n == classDoc.sessionarray.length)
+		{
+			alert("There are already " + n + " sessions in this class.");
+			c = false;
+		}
+		else if(n < classDoc.sessionarray.length)
+		{
+			//fire a warning
+			var str = "Warning: you are reducing the number of sessions.\n";
+			str += "This can result in lost data.\n";
+			str += "Are you sure you want to do this ?\n";
+			c = confirm(str);
+		}
+		else
+		{
+			c = true;
+		}
+
+		if(c)
+		{
+			$.post("/changenumsessions", {class: classDoc._id, num: n}, function(res)
+			{
+				classDoc = res;
+				alert("All records have been updated. There are now " + classDoc.sessionarray.length + " sessions in this class.");
+			});
+		}
+
+
+	})
+
 	$("#addTeacher").on("click", function(e)
 	{
 		if(classDoc == undefined)
 		{
-			alert("choose a class first");
+			alert("Choose a class first.");
 			return;
 		}
+
+
 		var _id = $("#teacherInput").val();
+
+		if(_id == "none")
+		{
+			alert("Choose a teacher first.");
+			return;
+		}
 		var req = $.post("/addteacher", {class: classDoc._id, teacher: _id},
 		function(res){
 		 classDoc = res;
@@ -80,7 +137,10 @@ $(document).ready(function(){
 		}
 		else
 		{
-			var c = confirm("Are you sure you want to remove this class.\nThis action cannot be undone.");
+			var str = "Are you sure you want to remove " + classDoc.classname;
+			str += ".\nAll data will be lost.";
+			str += ".\nThis action cannot be undone.";
+			var c = confirm(str);
 			if(c)
 			{
 				$.post("/removeclass", {class: classDoc._id}, function(res){
@@ -92,7 +152,8 @@ $(document).ready(function(){
 
 	$(document).on("click", ".remove_teacher", function(e)
 	{
-		if(confirm("Are you sure you want to remove ?"))
+		var str = "Are you sure you want to remove " + e.target.name + "?";
+		if(confirm(str))
 		{
 			var _id = e.target.id;
 			var req = $.post("/removeteacher", {class: classDoc._id, teacher: _id},
@@ -106,7 +167,9 @@ $(document).ready(function(){
 
 	$(document).on("click", ".remove_student", function(e)
 	{
-		if(confirm("Are you sure you want to remove ?"))
+		var str = "Are you sure you want to remove " + e.target.name + " from " + classDoc.classname +"?\n"
+		str += "Their data will be deleted.\nThis action can't be undone."
+		if(confirm(str))
 		{
 			var _id = e.target.id;
 			var req = $.post("/removestudentfromclass", {class: classDoc._id, student: _id},
@@ -118,6 +181,12 @@ $(document).ready(function(){
 	});
 
 	$('#addStudents').on("click", function(e){
+
+		if(classDoc == undefined)
+		{
+			alert("choose a class first");
+			return;
+		}
 
 		var raw = $('#newStudents').val();
 		lines = raw.split(/[\r\n]/);
@@ -157,9 +226,10 @@ $(document).ready(function(){
 		$('#teachersTable').empty();
 		for(var i = 0; i < classDoc.teachers.length; i++)
 		{
+			var teacherStr = classDoc.teachers[i].firstname + ", " +classDoc.teachers[i].surname + ", " + classDoc.teachers[i].username;
 			var row = $('<tr></tr>');
-			row.append($('<td>'+ classDoc.teachers[i].firstname + ", " +classDoc.teachers[i].surname + ", " + classDoc.teachers[i].username + '</td>'));
-			row.append($('<td><button class="btn btn-xs btn-danger remove_teacher" id="' + classDoc.teachers[i]._id + '">remove</button></td>'));
+			row.append($('<td>'+ teacherStr + '</td>'));
+			row.append($('<td><button class="btn btn-xs btn-danger remove_teacher" id="' + classDoc.teachers[i]._id + '" name="' + teacherStr +'">remove from class</button></td>'));
 			$('#teachersTable').append(row);
 		}
 
@@ -175,7 +245,7 @@ $(document).ready(function(){
 				row.append($('<td>'+ res[i].surname + '</td>'));
 				row.append($('<td>'+ res[i].firstname + '</td>'));
 				row.append($('<td>'+ res[i].username + '</td>'));
-				row.append($('<td><button class="btn btn-xs btn-danger remove_student" id="' + res[i]._id + '">remove</button></td>'));
+				row.append($('<td><button class="btn btn-xs btn-danger remove_student" id="' + res[i]._id + '" name="'+res[i].firstname + ' ' + res[i].surname +'">remove from class</button></td>'));
 				$('#studentsTable').append(row);
 			}
 		})

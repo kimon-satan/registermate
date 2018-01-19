@@ -139,6 +139,12 @@ function ClassManager(app)
 			{
 				//okay we can make the class
 				var s = req.body;
+				s.sessionarray = [];
+				//default to 10 sessions
+				for(var i = 0; i < 10; i++)
+				{
+					s.sessionarray.push("U");
+				}
 				s.teachers = [teacherDoc];
 
 				return classes.insert(s);
@@ -303,9 +309,11 @@ function ClassManager(app)
 		//adds students to a class
 		//1. get class
 
-
 		var classDoc = {};
 		var studentQueries = [];
+		var createdStudents = 0;
+		var addStudents = 0;
+		var existingStudents = 0;
 
 		var auth = {
 			username: req.session.username,
@@ -332,6 +340,12 @@ function ClassManager(app)
 			{
 				//2. check if the student exists - if not create, check for name discrepency
 				classDoc = doc;
+				var attendanceArray = [];
+				for(var i = 0; i < classDoc.sessionarray.length; i++)
+				{
+					attendanceArray.push("U");
+				}
+
 				var p = req.body.students.map((student)=>{
 					var regObject = {};
 					return students.findOne({username: student.username})
@@ -339,6 +353,8 @@ function ClassManager(app)
 
 						if(doc == null)
 						{
+							createdStudents += 1;
+							student.departments = [classDoc.department];
 							return students.insert(student);
 						}
 						else
@@ -349,7 +365,14 @@ function ClassManager(app)
 							{
 								studentQueries.push(student);
 							}
-							return Promise.resolve(doc);
+
+							if(! doc.departments.includes(classDoc.department))
+							{
+								return students.update(doc._id, {$addToSet: {departments: classDoc.department}});
+							}
+							else{
+								return Promise.resolve(doc);
+							}
 						}
 
 
@@ -357,7 +380,7 @@ function ClassManager(app)
 					.then((doc)=>
 					{
 						//check that a regObject has not already been inserted
-						regObject = {student_id: doc._id, class_id: classDoc._id, attendance: []};
+						regObject = {student_id: doc._id, class_id: classDoc._id, attendance: attendanceArray};
 						return registers.findOne({student_id: doc._id, class_id: classDoc._id});
 
 					})
@@ -365,7 +388,11 @@ function ClassManager(app)
 					{
 						if(doc == null)
 						{
+							addStudents += 1;
 							registers.insert(regObject)
+						}
+						else{
+							existingStudents += 1;
 						}
 
 					})
@@ -381,7 +408,17 @@ function ClassManager(app)
 
 			if(studentQueries.length == 0)
 			{
-				res.send("Students added");
+				var str = "";
+				if(existingStudents > 0)
+				{
+					str += existingStudents  + " students were already in the class.\n";
+				}
+				str += addStudents  + " students have been added to the class.\n";
+				if(createdStudents > 0)
+				{
+					str += createdStudents + " of them are new to registermate."
+				}
+				res.send(str);
 			}
 			else {
 				res.send(studentQueries)
@@ -498,6 +535,80 @@ function ClassManager(app)
 
 	})
 
+	app.post('/changenumsessions', (req,res) =>
+	{
+		var auth = {
+			username: req.session.username,
+			password: req.session.password
+		}
+
+		var studentList = [];
+		var diff;
+		var idx;
+		var classDoc;
+
+		helpers.authenticateForClass(auth, req.body.class)
+		.then((doc)=>
+		{
+			//get the classDoc
+			return classes.findOne(req.body.class);
+		})
+
+		.then((doc)=>
+		{
+			classDoc = doc;
+			diff = req.body.num - doc.sessionarray.length;
+			idx = doc.sessionarray.length + diff;
+
+			if(diff < 0)
+			{
+				doc.sessionarray.splice(idx, Math.abs(diff));
+			}
+			else
+			{
+				for(var i = 0; i < diff; i++)
+				{
+					doc.sessionarray.push("U");
+				}
+
+			}
+
+			classes.update(doc._id, doc);
+			return registers.find({class_id: ObjectId(doc._id)});
+		})
+
+		.then((docs)=>{
+			//update each student record in the same way
+			var p = docs.map((doc)=>{
+				if(diff < 0)
+				{
+					doc.attendance.splice(idx, Math.abs(diff));
+				}
+				else
+				{
+					for(var i = 0; i < diff; i++)
+					{
+						doc.attendance.push("U");
+					}
+				}
+				return registers.update(doc._id, doc);
+			});
+
+			return Promise.all(p);
+
+		})
+
+		.then(()=>
+		{
+			//send back the modified class
+			res.send(classDoc);
+		})
+
+		.catch((err)=>{
+			res.status(400).send(err);
+		})
+
+	})
 
 }
 
