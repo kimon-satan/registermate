@@ -4,6 +4,8 @@ $(document).ready(function()
 	var updateProc;
 	var numPresent;
 	var numStudents;
+	var modal_username;
+	var modal_sessionnum;
 
 
 	//close both panels
@@ -136,7 +138,35 @@ $(document).ready(function()
 
 	})
 
-	//TODO click on student cell to toggle registration
+	$(document).on("click",".attendance",function(e){
+
+		var elem = $('#' + e.target.id);
+		modal_username = e.target.parentElement.id;
+		modal_sessionnum = Number(elem.attr('sessionnum'));
+
+		var str = "<p>Change " + modal_username + "'s status for session " + (modal_sessionnum + 1) + " to ... </p>";
+		$('.modal-body').empty();
+		$('.modal-body').append(str);
+		$('#mydialog').modal('toggle');
+
+	})
+
+	$(".dbutton").on("click",function(e)
+	{
+		var status = e.target.id.substring(0,1).toUpperCase();
+		if(status == "P")status = "X";
+		$.post("/changestudentstatus",
+		{
+			class: classDoc._id,
+			username: modal_username,
+			sessionnum: modal_sessionnum,
+			status: status
+		}, function(){
+			updateRegister();
+		});
+	})
+
+
 	//TODO late functionality
 	//TODO send email
 	//TODO download csv
@@ -209,15 +239,28 @@ $(document).ready(function()
 
 				for(var i = 0; i < res.length; i++)
 				{
-					var row = $('<tr></tr>');
+					var row = $('<tr id="' + res[i].username + '"></tr>');
 					row.append($('<td>'+ res[i].surname + ", " + res[i].firstname + ", " + res[i].username + '</td>'));
 					for(var j = 0; j < res[i].attendance.length; j++)
 					{
-						row.append($("<td class='session_" + (j+1) + "'>" + res[i].attendance[j] + "</td>"));
-						if(res[i].attendance[j] == "X" || res[i].attendance[j] == "L")
+						var cell = $("<td id='register_" + i + "_" + j + "'>" + res[i].attendance[j] + "</td>");
+						cell.addClass("attendance");
+						cell.attr("sessionnum", j);
+						if(res[i].attendance[j] == "X")
 						{
+							cell.addClass("present");
 							numPresent += 1;
 						}
+						else if(res[i].attendance[j] == "L")
+						{
+							cell.addClass("late");
+							numPresent += 1;
+						}
+						else if(res[i].attendance[j] == "A")
+						{
+							cell.addClass("absent");
+						}
+						row.append(cell);
 					}
 					$('#registerBody').append(row);
 				}

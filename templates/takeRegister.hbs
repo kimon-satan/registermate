@@ -1,7 +1,7 @@
 <html>
 {{> header}}
 <body>
-	<div class="container-fluid">
+
 		{{> topbar}}
 		<h1>Registermate</h1>
 		<h3>Take the register</h3>
@@ -102,6 +102,27 @@
 		</div>
 
 	</div>
+<!-- dialog box -->
+		<div class="container-fluid">
+			<div id="mydialog" class="modal fade" tabindex="-1" role="dialog">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							<h4 class="modal-title">Change student status</h4>
+						</div>
+						<div class="modal-body">
+							<p>default text</p>
+						</div>
+						<div class="modal-footer">
+							<button type="button" id="present" class="dbutton btn btn-default present" data-dismiss="modal">Present</button>
+							<button type="button" id="absent" class="dbutton btn btn-default absent" data-dismiss="modal">Absent</button>
+							<button type="button" id="late" class="dbutton btn btn-default late" data-dismiss="modal">Late</button>
+							<button type="button" id="unregistered" class="dbutton btn btn-default" data-dismiss="modal">Unregistered</button>
+						</div>
+					</div><!-- /.modal-content -->
+				</div><!-- /.modal-dialog -->
+			</div><!-- /.modal -->
 
 	<script src="clientscripts/takeRegister.js"></script>
 </body>

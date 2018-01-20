@@ -170,6 +170,51 @@ function RegisterManager(app)
 
 	});
 
+	app.post("/changestudentstatus", (req,res)=>{
+
+		var auth = {
+			username: req.session.username,
+			password: req.session.password
+		}
+
+		var classDoc;
+
+		helpers.authenticateForClass(auth, req.query._id)
+
+		.then((doc) => {
+			//find the student
+			return students.findOne({username: req.body.username})
+		})
+
+		.then((doc) =>{
+			//find the register record
+			return registers.findOne({student_id: doc._id, class_id: ObjectId(req.body.class)});
+		})
+
+		.then((doc) =>{
+			doc.attendance[Number(req.body.sessionnum)] = req.body.status;
+			return registers.update(doc._id, doc);
+		})
+
+		.then(()=>{
+			res.end();
+		})
+
+	})
+
+	app.get('/takeregister' , (req, res) => {
+
+		if (req.session.username != null && req.session.password != null)
+		{
+			res.render(__dirname + '/templates/takeRegister.hbs', {SERVER_URL: URL});
+		}
+		else
+		{
+			res.render(__dirname + '/templates/login.hbs', {SERVER_URL: URL});
+		}
+
+	})
+
 	app.get("/findmyclass", (req,res) =>
 	{
 
@@ -210,18 +255,6 @@ function RegisterManager(app)
 
 	})
 
-	app.get('/takeregister' , (req, res) => {
-
-		if (req.session.username != null && req.session.password != null)
-		{
-			res.render(__dirname + '/templates/takeRegister.hbs', {SERVER_URL: URL});
-		}
-		else
-		{
-			res.render(__dirname + '/templates/login.hbs', {SERVER_URL: URL});
-		}
-
-	})
 
 	app.get("/passwordregister/:username/:classid", (req,res) =>
 	{
