@@ -245,7 +245,7 @@ function RegisterManager(app)
 
 		if(req.session.studentname != undefined)
 		{
-			res.status(400).send("you've already registered");
+			res.status(400).send("You've already registered");
 			return;
 		}
 
@@ -281,7 +281,7 @@ function RegisterManager(app)
 
 		.then((doc)=>
 		{
-
+			console.log("registering");
 			//TODO ... marking late
 			//TODO ... check for dual IP
 			doc.attendance[Number(classDoc.currentsession)] = "X";
@@ -291,15 +291,20 @@ function RegisterManager(app)
 		.then((doc)=>
 		{
 			req.session.studentname = req.body.username;
-			req.session.cookie.maxAge = 5000;
+			req.session.cookie.maxAge = 60000 * 40; // 40 mins before next login
 			res.render(__dirname + '/templates/success.hbs',{SERVER_URL: URL});
-			return Promise.resolve();
 		})
 
 		.catch((err)=>
 		{
-			console.log(err);
-			res.status(400).send(err);
+			if(err)
+			{
+				console.log(err);
+				res.status(400).send(err);
+			}
+			else{
+				res.status(400).send("There was a problem on the server ... ");
+			}
 		})
 
 	})

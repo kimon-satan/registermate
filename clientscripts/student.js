@@ -8,11 +8,12 @@ $(document).ready(function()
 
 		if(r.test(un))
 		{
-			var req = $.get("/findmyclass",{username: un}, function(res)
+			var req = $.get( server_url + "/findmyclass",{username: un}, function(res)
 			{
+				//TODO don't use this method as it allows the back button
 				window.location = "/passwordregister/" + un + "/" + res;
 			})
-			
+
 			req.fail(function(res){
 				alert(res);
 			})

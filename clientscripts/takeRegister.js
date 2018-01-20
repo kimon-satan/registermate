@@ -12,7 +12,7 @@ $(document).ready(function()
 	$("#closeDiv").addClass("hidden");
 
 	//Load the user's classes
-	var req = $.get("userclasses", function(res){
+	var req = $.get(server_url + "/userclasses", function(res){
 
 		var sInput = $('#classInput')
 		for(var i = 0; i < res.length; i++)

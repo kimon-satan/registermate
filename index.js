@@ -5,6 +5,7 @@ const helpers = require('./serverHelpers.js')
 const db = monk("localhost:27017/registermate");
 const bodyParser = require("body-parser");
 const expressSession = require('express-session');
+const mdbstore = require('connect-mongodb-session')(expressSession);
 const hbs = require('hbs');
 const nodemailer = require('nodemailer');
 const accounts = require('./accounts.js');
@@ -19,11 +20,27 @@ global.URL = "";
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+var store = new mdbstore(
+{
+	uri: 'mongodb://localhost:27017/connect_mongodb_session_test',
+	collection: 'mySessions'
+});
+
+// Catch errors
+store.on('error', function(error) {
+	assert.ifError(error);
+	assert.ok(false);
+});
+
 app.set('trust proxy', 1) // trust first proxy
 app.use(expressSession({
 	secret: 'keyboard cat',
-	cookie: { maxAge: 60000 }
+	resave: false,
+	store: store,
+	cookie: { maxAge: 60000 },
+	saveUninitialized: false
 }));
+
 
 db.then(() => {
 	console.log('Connected correctly to server')
@@ -83,6 +100,7 @@ if(argv.generateUsers)
 app.get('/', (req, res) => res.redirect(URL + '/student/'))
 app.get('/student', (req, res) =>
 {
+	console.log(req.session);
 	if(req.session.studentname == null)
 	{
 		res.render(__dirname + '/templates/student.hbs', {SERVER_URL: URL})
