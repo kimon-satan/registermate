@@ -1,12 +1,12 @@
 {
   "name": "registermate_v3.0",
-  "version": "1.0.0",
-  "description": "",
+  "version": "3.0.0",
+  "description": "Mobile registration system",
   "main": "index.js",
   "dependencies": {
     "body-parser": "^1.18.2",
-    "cookie-session": "^2.0.0-beta.3",
     "express": "^4.16.2",
+    "express-session": "^1.15.6",
     "fs": "0.0.1-security",
     "hbs": "^4.0.1",
     "monk": "^6.0.5",

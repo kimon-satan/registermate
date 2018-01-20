@@ -4,7 +4,7 @@ const monk = require('monk');
 const helpers = require('./serverHelpers.js')
 const db = monk("localhost:27017/registermate");
 const bodyParser = require("body-parser");
-const cookieSession = require('cookie-session');
+const expressSession = require('express-session');
 const hbs = require('hbs');
 const nodemailer = require('nodemailer');
 const accounts = require('./accounts.js');
@@ -19,15 +19,11 @@ global.URL = "";
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use(cookieSession({
-	name: 'class',
-	keys: ["myfirstkey"],
-	secret: "whydontyoutrustme",
-	// Cookie Options
-	maxAge: 1000 * 60 * 24 * 24 // 24 hours
-}))
-
-app.set('trust proxy', 1) // trust first proxy ???
+app.set('trust proxy', 1) // trust first proxy
+app.use(expressSession({
+	secret: 'keyboard cat',
+	cookie: { maxAge: 60000 }
+}));
 
 db.then(() => {
 	console.log('Connected correctly to server')
@@ -81,12 +77,6 @@ if(argv.generateUsers)
 	accountsApp.generateFakeAccounts(argv.generateUsers);
 }
 
-// This allows you to set req.session.maxAge to let certain sessions
-// have a different value than the default.
-app.use(function (req, res, next) {
-  req.sessionOptions.maxAge = req.session.maxAge || req.sessionOptions.maxAge
-  next()
-})
 
 ///////////////////////////////////////FRONT PAGES////////////////////////////////////
 
@@ -104,7 +94,7 @@ app.get('/student', (req, res) =>
 })
 app.get('/teacher', (req, res) =>
 	{
-
+		console.log(req.session);
 		if (req.session.username != null && req.session.password != null)
 		{
 				// Already logged in.

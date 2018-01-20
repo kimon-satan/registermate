@@ -96,6 +96,7 @@ function Accounts(app)
 						req.session.password = req.body.password;
 						req.session.role = data.role;
 						req.session._id = data._id;
+						req.session.cookie.maxAge = 60000 * 60 * 6; //6 hrs
 						res.redirect(URL + '/teacher');
 					}
 					else
@@ -106,12 +107,15 @@ function Accounts(app)
 			}
 		}
 	)
+
 	app.get('/logout', (req, res) =>
 	{
 		if(req.session.studentname == undefined)
 		{
-			req.session = null;
-			res.redirect(URL + '/teacher');
+			req.session.destroy(function(){
+				res.redirect(URL + '/teacher');
+			})
+
 		}
 	})
 

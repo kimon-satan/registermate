@@ -291,8 +291,7 @@ function RegisterManager(app)
 		.then((doc)=>
 		{
 			req.session.studentname = req.body.username;
-			//FIXME hmm putting this back
-			req.sessionOptions.maxAge = 1000; //just one second
+			req.session.cookie.maxAge = 5000;
 			res.render(__dirname + '/templates/success.hbs',{SERVER_URL: URL});
 			return Promise.resolve();
 		})
