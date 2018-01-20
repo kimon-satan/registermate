@@ -10,12 +10,17 @@ $(document).ready(function()
 		{
 			var req = $.get( server_url + "/findmyclass",{username: un}, function(res)
 			{
-				//TODO don't use this method as it allows the back button
-				window.location = "/passwordregister/" + un + "/" + res;
+				document.write(res);
 			})
 
 			req.fail(function(res){
-				alert(res);
+				if(res.responseText)
+				{
+					alert(res.responseText);
+				}
+				else{
+					alert(res);
+				}
 			})
 		}
 		else{

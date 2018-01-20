@@ -172,6 +172,13 @@ function RegisterManager(app)
 
 	app.get("/findmyclass", (req,res) =>
 	{
+
+		if(req.session.studentname != undefined)
+		{
+			res.status(400).send("Hey " + req.session.studentname + ",\nYou've already logged in once from this device.");
+			return;
+		}
+
 		students.findOne({username: req.query.username})
 
 		.then((doc)=>{
@@ -190,8 +197,9 @@ function RegisterManager(app)
 
 		})
 
-		.then((doc)=>{
-			res.send(doc._id);
+		.then((doc)=>
+		{
+			res.render(__dirname + '/templates/passwordRegister.hbs',{SERVER_URL: URL, username: req.query.username, classid: doc._id})
 		})
 
 		.catch((err)=>
@@ -232,7 +240,7 @@ function RegisterManager(app)
 		}
 		else
 		{
-			res.render(__dirname + '/templates/success.hbs', {SERVER_URL: URL});
+			res.render(__dirname + '/templates/success.hbs', {SERVER_URL: URL, username: req.session.studentname});
 		}
 
 	})
@@ -281,7 +289,6 @@ function RegisterManager(app)
 
 		.then((doc)=>
 		{
-			console.log("registering");
 			//TODO ... marking late
 			//TODO ... check for dual IP
 			doc.attendance[Number(classDoc.currentsession)] = "X";
@@ -292,7 +299,7 @@ function RegisterManager(app)
 		{
 			req.session.studentname = req.body.username;
 			req.session.cookie.maxAge = 60000 * 40; // 40 mins before next login
-			res.render(__dirname + '/templates/success.hbs',{SERVER_URL: URL});
+			res.render(__dirname + '/templates/success.hbs',{SERVER_URL: URL, username: req.session.studentname});
 		})
 
 		.catch((err)=>

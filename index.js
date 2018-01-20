@@ -100,14 +100,13 @@ if(argv.generateUsers)
 app.get('/', (req, res) => res.redirect(URL + '/student/'))
 app.get('/student', (req, res) =>
 {
-	console.log(req.session);
 	if(req.session.studentname == null)
 	{
 		res.render(__dirname + '/templates/student.hbs', {SERVER_URL: URL})
 	}
 	else
 	{
-		res.render(__dirname + '/templates/success.hbs', {SERVER_URL: URL})
+		res.render(__dirname + '/templates/success.hbs', {SERVER_URL: URL, username: req.session.studentname})
 	}
 })
 app.get('/teacher', (req, res) =>
