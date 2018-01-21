@@ -1,6 +1,5 @@
 
 3. implement register interface ! (90%)
-	- late functionality (50%)
 	- email absentees
 	- download csv
 	- auto-close after 60mins

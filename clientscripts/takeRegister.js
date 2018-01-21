@@ -34,6 +34,7 @@ $(document).ready(function()
 			//updateStudents();
 			$('#sessionInput').empty();
 
+
 			for(var i = 0; i < classDoc.sessionarray.length; i++)
 			{
 				var s = (i + 1) + " of " + classDoc.sessionarray.length;
@@ -46,6 +47,7 @@ $(document).ready(function()
 			}
 
 			$('#sessionInput').val(classDoc.currentsession);
+			$('#lateTime').val(classDoc.latetime);
 
 			//Load the table header
 			$('#registerHeader').empty();
@@ -118,6 +120,7 @@ $(document).ready(function()
 	$("#sessionInput").on("change", function(e)
 	{
 		var n = Number($("#sessionInput").val());
+
 		$.post("/changecurrentsession",
 		{class: classDoc._id, currentsession: n},
 		function(res)
@@ -144,6 +147,23 @@ $(document).ready(function()
 		{
 			classDoc.marklate = $('#' + e.target.id).prop('checked');
 			$.post('/setclassparameter', {class: classDoc._id, marklate: classDoc.marklate});
+		}
+		else
+		{
+			alert("select a class first")
+		}
+	})
+
+	$("#lateTime").on("change", function(e)
+	{
+		if(classDoc != undefined || classDoc != "none")
+		{
+			classDoc.latetime = $('#' + e.target.id).val();
+			if(classDoc.latetime == "never")
+			{
+				classDoc.latetime = 0;
+			}
+			$.post('/setclassparameter', {class: classDoc._id, latetime: classDoc.latetime});
 		}
 		else
 		{
@@ -180,12 +200,12 @@ $(document).ready(function()
 	})
 
 
-	//TODO late functionality
 	//TODO send email
 	//TODO download csv
 
 	function updateFunction()
 	{
+
 		var m = Date.now() - classDoc.sessionarray[classDoc.currentsession];
 		var d = new Date(m);
 		var t = [ d.getHours().toString(), d.getMinutes().toString(), d.getSeconds().toString()];
@@ -204,11 +224,13 @@ $(document).ready(function()
 		$('#numStudents').empty();
 		$('#numStudents').append("<p><b>Total students: </b>" + numStudents + "</p>");
 
+		var np = numPresent[Number(classDoc.currentsession)];
+
 		$('#numPresent').empty();
-		$('#numPresent').append("<p><b>Total present: </b>" + numPresent + "</p>");
+		$('#numPresent').append("<p><b>Total present: </b>" + np  + "</p>");
 
 		$('#attendance').empty();
-		$('#attendance').append("<p><b>Attendence: </b>" + (numPresent*100/numStudents).toFixed(0) + "%</p>");
+		$('#attendance').append("<p><b>Attendence: </b>" + (np*100/numStudents).toFixed(0) + "%</p>");
 
 		updateRegister();
 	}
@@ -249,10 +271,15 @@ $(document).ready(function()
 				$('#registerBody').empty();
 
 				numStudents = res.length;
-				numPresent = 0;
+				numPresent = [];
+				for(var i = 0; i < classDoc.sessionarray.length; i++){
+					numPresent.push(0);
+				}
+
 
 				for(var i = 0; i < res.length; i++)
 				{
+
 					var row = $('<tr id="' + res[i].username + '"></tr>');
 					row.append($('<td>'+ res[i].surname + ", " + res[i].firstname + ", " + res[i].username + '</td>'));
 					for(var j = 0; j < res[i].attendance.length; j++)
@@ -263,12 +290,12 @@ $(document).ready(function()
 						if(res[i].attendance[j] == "X")
 						{
 							cell.addClass("present");
-							numPresent += 1;
+							numPresent[j] += 1;
 						}
 						else if(res[i].attendance[j] == "L")
 						{
 							cell.addClass("late");
-							numPresent += 1;
+							numPresent[j] += 1;
 						}
 						else if(res[i].attendance[j] == "A")
 						{

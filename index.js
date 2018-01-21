@@ -20,14 +20,14 @@ global.URL = "";
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-var store = new mdbstore(
+global.sessionstore = new mdbstore(
 {
 	uri: 'mongodb://localhost:27017/connect_mongodb_session_test',
 	collection: 'mySessions'
 });
 
 // Catch errors
-store.on('error', function(error) {
+global.sessionstore.on('error', function(error) {
 	assert.ifError(error);
 	assert.ok(false);
 });
@@ -36,7 +36,7 @@ app.set('trust proxy', 1) // trust first proxy
 app.use(expressSession({
 	secret: 'keyboard cat',
 	resave: false,
-	store: store,
+	store: global.sessionstore,
 	cookie: { maxAge: 60000 },
 	saveUninitialized: false
 }));
@@ -106,7 +106,8 @@ app.get('/student', (req, res) =>
 	}
 	else
 	{
-		res.render(__dirname + '/templates/success.hbs', {SERVER_URL: URL, username: req.session.studentname})
+		res.render(__dirname + '/templates/success.hbs',
+		{SERVER_URL: URL, username: req.session.studentname, isLate: req.session.islate})
 	}
 })
 app.get('/teacher', (req, res) =>

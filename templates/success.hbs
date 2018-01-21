@@ -5,6 +5,9 @@
 		<h1>Registermate</h1>
 			<h3>Whoop {{username}} !</h3>
 			<h3>You're registered </h3>
+			{{#if isLate}}
+				<h2>You've been marked late for this session.</h2>
+			{{/if}}
 		</div>
 	</body>
 </html>

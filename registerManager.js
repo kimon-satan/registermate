@@ -96,7 +96,16 @@ function RegisterManager(app)
 			if(docs.length > 0)
 			{
 				var p = docs.map((doc)=>{
-					return students.update(doc.student_id, {$set: {currentclass: req.body.class}});
+
+					//remove any existing sessions
+					if(doc.session_id)
+					{
+						global.sessionstore.destroy(doc.session_id,function(error){
+							console.log(error)
+						});
+					}
+
+					return students.update(doc.student_id, {$set: {currentclass: req.body.class, session_id: null}});
 				})
 
 				return Promise.all(p);
@@ -168,7 +177,24 @@ function RegisterManager(app)
 		.then((doc)=>
 		{
 			//reset only those students who have this class as their current one
-			return students.update({currentclass: req.body.class},{$set: {currentclass: null}},{multi: true});
+			students.update({currentclass: req.body.class},{$set: {currentclass: null}},{multi: true});
+			return students.find({currentclass: req.body.class});
+		})
+
+		.then((docs)=>
+		{
+			//reset only those students who have this class as their current one
+			docs.forEach(function(item){
+				//destroy session
+				if(item.session_id)
+				{
+					global.sessionstore.destroy(item.session_id,function(error){
+						console.log(error)
+					});
+					students.update(item._id, {$set: {session_id: null}});
+				}
+			})
+
 		})
 
 		.then((doc)=>
@@ -318,7 +344,8 @@ function RegisterManager(app)
 		}
 		else
 		{
-			res.render(__dirname + '/templates/success.hbs', {SERVER_URL: URL, username: req.session.studentname});
+			res.render(__dirname + '/templates/success.hbs',
+			{SERVER_URL: URL, username: req.session.studentname, isLate: req.session.islate});
 		}
 
 	})
@@ -328,6 +355,7 @@ function RegisterManager(app)
 
 		var student_id;
 		var classDoc;
+		var isLate = false;
 
 		if(req.session.studentname != undefined)
 		{
@@ -367,24 +395,51 @@ function RegisterManager(app)
 
 		.then((doc)=>
 		{
-			//TODO ... marking late (50%)
 			//TODO ... check for dual IP
-			if(classDoc.marklate == "true")
+
+			var lt = Number(classDoc.latetime) * 1000 * 60; //minutes to milliseconds
+			var n = Number(classDoc.currentsession);
+			isLate = false;
+
+			if(doc.attendance[n] == "X" || doc.attendance[n] == "L")
 			{
-				doc.attendance[Number(classDoc.currentsession)] = "L";
+				return Promise.reject("You're already registered for this session");
+			}
+			else if(classDoc.marklate == "true")
+			{
+				doc.attendance[n] = "L";
+				isLate = true;
+			}
+			else if(lt > 0)
+			{
+				var s = Number(classDoc.sessionarray[n]);
+				if(Date.now() > s + lt)
+				{
+					doc.attendance[n] = "L";
+					isLate = true;
+				}
+				else
+				{
+					doc.attendance[n] = "X";
+				}
 			}
 			else
 			{
-				doc.attendance[Number(classDoc.currentsession)] = "X";
+				doc.attendance[n] = "X";
 			}
+
 			return registers.update(ObjectId(doc._id), doc);
+
 		})
 
 		.then((doc)=>
 		{
+			students.update(ObjectId(student_id), {$set: {session_id: req.session.id}});
 			req.session.studentname = req.body.username;
+			req.session.islate = isLate;
 			req.session.cookie.maxAge = 60000 * 40; // 40 mins before next login
-			res.render(__dirname + '/templates/success.hbs',{SERVER_URL: URL, username: req.session.studentname});
+			res.render(__dirname + '/templates/success.hbs',
+			{SERVER_URL: URL, username: req.session.studentname, isLate: req.session.islate});
 		})
 
 		.catch((err)=>
