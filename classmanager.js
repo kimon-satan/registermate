@@ -142,6 +142,8 @@ function ClassManager(app)
 				s.sessionarray = [];
 				s.classpass = null;
 				s.currentsession = 0;
+				s.marklate = false;
+				s.latetime = 0;
 				//default to 10 sessions
 				for(var i = 0; i < 10; i++)
 				{

@@ -138,6 +138,19 @@ $(document).ready(function()
 
 	})
 
+	$("#lateOverride").on("change", function(e)
+	{
+		if(classDoc != undefined || classDoc != "none")
+		{
+			classDoc.marklate = $('#' + e.target.id).prop('checked');
+			$.post('/setclassparameter', {class: classDoc._id, marklate: classDoc.marklate});
+		}
+		else
+		{
+			alert("select a class first")
+		}
+	})
+
 	$(document).on("click",".attendance",function(e){
 
 		var elem = $('#' + e.target.id);
@@ -221,6 +234,7 @@ $(document).ready(function()
 		$("#openPanel").removeClass("hidden");
 		$("#closeDiv").removeClass("hidden");
 		$("#openDiv").addClass("hidden");
+		$('#lateOverride').prop('checked',classDoc.marklate == "true");
 		var c = "session_" + (Number(classDoc.currentsession) + 1);
 		$('th.'+c).removeClass("danger");
 		$('th.'+c).addClass("success");

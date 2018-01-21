@@ -21,6 +21,19 @@ teachers: [], sessionarray: [date, date, blank, blank, blank, etc... ]
 
 function RegisterManager(app)
 {
+	app.get('/takeregister' , (req, res) => {
+
+		if (req.session.username != null && req.session.password != null)
+		{
+			res.render(__dirname + '/templates/takeRegister.hbs', {SERVER_URL: URL});
+		}
+		else
+		{
+			res.render(__dirname + '/templates/login.hbs', {SERVER_URL: URL});
+		}
+
+	})
+
 	app.post('/changecurrentsession', (req,res) =>
 	{
 		var auth = {
@@ -64,7 +77,12 @@ function RegisterManager(app)
 		.then((doc)=>{
 
 			doc.sessionarray[doc.currentsession] = Date.now(); //timestamp the register
-			return classes.update(req.body.class, {$set: {classpass: req.body.classpass, sessionarray: doc.sessionarray}});
+			return classes.update(req.body.class,
+				{$set: {
+					classpass: req.body.classpass,
+					sessionarray: doc.sessionarray,
+					marklate: false
+				}});
 		})
 
 		.then((doc)=>
@@ -202,18 +220,44 @@ function RegisterManager(app)
 
 	})
 
-	app.get('/takeregister' , (req, res) => {
+	app.post("/setclassparameter", (req,res)=>{
 
-		if (req.session.username != null && req.session.password != null)
-		{
-			res.render(__dirname + '/templates/takeRegister.hbs', {SERVER_URL: URL});
-		}
-		else
-		{
-			res.render(__dirname + '/templates/login.hbs', {SERVER_URL: URL});
+		//just a simple setting of a classdoc parameter
+
+		var auth = {
+			username: req.session.username,
+			password: req.session.password
 		}
 
-	})
+		//create a new params object excluding class property
+		var k = Object.keys(req.body);
+		var params = {};
+		for(var i = 0; i < k.length; i++)
+		{
+			if(k[i] != "class")
+			{
+				params[k[i]] = req.body[k[i]];
+			}
+		}
+
+		helpers.authenticateForClass(auth, req.body.class)
+
+		.then((doc)=>
+		{
+			return classes.update(req.body.class, {$set: params});
+		})
+
+		.catch((err)=>
+		{
+			console.log(err);
+			res.status(400).send(err);
+		})
+
+	});
+
+
+
+	//////////////////////////////STUDENT METHODS/////////////////////////
 
 	app.get("/findmyclass", (req,res) =>
 	{
@@ -244,7 +288,8 @@ function RegisterManager(app)
 
 		.then((doc)=>
 		{
-			res.render(__dirname + '/templates/passwordRegister.hbs',{SERVER_URL: URL, username: req.query.username, classid: doc._id})
+			res.render(__dirname + '/templates/passwordRegister.hbs',
+			{SERVER_URL: URL, username: req.query.username, classid: doc._id, classname: doc.classname});
 		})
 
 		.catch((err)=>
@@ -322,9 +367,16 @@ function RegisterManager(app)
 
 		.then((doc)=>
 		{
-			//TODO ... marking late
+			//TODO ... marking late (50%)
 			//TODO ... check for dual IP
-			doc.attendance[Number(classDoc.currentsession)] = "X";
+			if(classDoc.marklate == "true")
+			{
+				doc.attendance[Number(classDoc.currentsession)] = "L";
+			}
+			else
+			{
+				doc.attendance[Number(classDoc.currentsession)] = "X";
+			}
 			return registers.update(ObjectId(doc._id), doc);
 		})
 

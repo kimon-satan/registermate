@@ -1,11 +1,13 @@
 
 3. implement register interface ! (90%)
-	- late functionality
+	- late functionality (50%)
 	- email absentees
 	- download csv
 	- auto-close after 60mins
 	- warnings for stupid actions
 	- destroy session tokens for start of register
+	- hover over for stats
+	- reset register button
 
 4. check VM deployment
 5. admin students (basic)
