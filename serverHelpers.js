@@ -106,7 +106,7 @@ exports.authenticateForClass = function(user, class_id)
 			else
 			{
 				//check the user is attached to class or is admin
-				if(data.teachers.includes(user.username) || role == "admin")
+				if(data.teachers.includes(ObjectId(user._id)) || role == "admin")
 				{
 					//find the teacher
 					resolve("Authorised");
