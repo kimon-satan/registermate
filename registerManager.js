@@ -482,7 +482,7 @@ function RegisterManager(app)
 			//create the header
 			var header = "Registermate Download\n";
 			var d = new Date();
-			header += "date: " + d.toDateString() + "\n";
+			header += "download date: " + d.toDateString() + "\n";
 			header += "department: " + classDoc.department + "\n";
 			header += "classname: " + classDoc.classname + "\n";
 			header += "classtype: " + classDoc.classtype + "\n";
@@ -490,7 +490,7 @@ function RegisterManager(app)
 			header += "teachers: ";
 			for(var i = 0; i < classDoc.teachers.length; i ++)
 			{
-				header += "(" + classDoc.teachers[i].username + " - " + classDoc.teachers[i].firstname + "," + classDoc.teachers[i].surname + ")";
+				header += "(" + classDoc.teachers[i].username + " - " + classDoc.teachers[i].firstname + " " + classDoc.teachers[i].surname + ")";
 				if( i < classDoc.teachers.length - 1) header += ",";
 			}
 			header += "\n";
@@ -537,23 +537,44 @@ function RegisterManager(app)
 				return (a.surname < b.surname)? -1 : 1;
 			})
 
-			//TODO finish this !
-			console.log(doc);
+
 			var body = "surname, firstname, username, ";
 			for(var j = 0; j < classDoc.sessionarray.length; j++ )
 			{
-				body += "session " + (j+1) + " - " + classDoc.sessionarray[j];
+				if(classDoc.sessionarray[j] != "U")
+				{
+					var d = new Date(Number(classDoc.sessionarray[j]));
+					body += "session " + (j+1) + " - " + d.getDate() + "/" + d.getMonth() + 1 + "/" + d.getFullYear();
+				}
+				else
+				{
+					body += "session " + (j+1) + " - unregistered";
+				}
+
+				if(j < classDoc.sessionarray.length -1)
+				{
+					body += ", "
+				}
+
 			}
+
+			body+="\n";
 
 			for(var i = 0; i < doc.length; i++)
 			{
 				body += doc[i].surname + ", " + doc[i].firstname + ", " + doc[i].username + ", ";
-				for(var j = 0; j < classDoc.sessionarray.length; j++ )
+				for(var j = 0; j < doc[i].attendance.length; j++ )
 				{
-
+					body += doc[i].attendance[j];
+					if(j < doc[i].attendance.length)body += ","
 				}
 
+				body += "\n";
 			}
+
+			fileString += body;
+
+			res.send(fileString);
 		})
 
 		.catch((err)=>

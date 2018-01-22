@@ -200,8 +200,22 @@ $(document).ready(function()
 	})
 
 	$('#download').on("click", function(e){
-		$.get("/classregisterfile",{
+		$.get("/classregisterfile",
+		{
 			class: classDoc._id
+		},
+		function(res)
+		{
+			var fn = classDoc.classname + "_" + classDoc.currentsession + ".csv";
+			fn = fn.replace(/[-\:\;"\,\'\|]/g, "");
+			fn = fn.replace(/\s/g, "_");
+
+			var csvContent = "data:text/csv;charset=utf-8," + res;
+			var encodedUri = encodeURI(csvContent);
+			var link = document.createElement("a");
+			link.setAttribute("href", encodedUri);
+			link.setAttribute("download", fn);
+			link.click();
 		})
 	})
 

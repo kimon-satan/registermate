@@ -1,17 +1,18 @@
+4. check VM deployment
 
-3. implement register interface ! (95%)
-	- download csv
+5. admin students (basic)
+	- just list them + add and remove
+
+6. admin classes (basic)
+	- just list them
+
+7. extras for register page
 	- auto-close after 60mins
 	- warnings for stupid actions
 	- hover over for stats
 	- reset register button
 	- override alert boxes to bootstrap
 
-4. check VM deployment
-5. admin students (basic)
-	- just list them + add and remove
-6. admin classes (basic)
-	- just list them
 
 For later ...
 
@@ -19,7 +20,7 @@ For later ...
 - Deal with wrong class registration (student side)
 - Deal with opening register when students are open for another class
 - Dealing with name discrepancies.
-- import data from an existing class
+- import data from an existing class (hide this button for now)
 
 ///////////////////////////////
 
