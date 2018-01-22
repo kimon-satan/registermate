@@ -54,23 +54,13 @@ hbs.registerPartials(__dirname + '/templates');
 
 app.transporter = "";
 
-nodemailer.createTestAccount((err, account) => {
-
-	if(err)
-	{
-		console.log(err);
-		return Promise.reject();
-	}
-	else
-	{
 		// init reusable transporter object using the default SMTP transport
-		app.transporter = nodemailer.createTransport({
-				host: 'igor.gold.ac.uk', //we should now be able to email igor accounts
-				port: 25,
-				secure: false // true for 465, false for other ports
-		});
-	}
-})
+app.transporter = nodemailer.createTransport({
+	host: 'igor.gold.ac.uk', //we should now be able to email igor accounts
+	port: 25,
+	secure: false, // true for 465, false for other ports
+    	tls: {rejectUnauthorized: false}
+});
 
 app.use("/libs",express.static(__dirname + '/libs'));
 app.use("/clientscripts",express.static(__dirname + '/clientscripts'));
