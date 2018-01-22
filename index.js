@@ -14,8 +14,8 @@ const registerManager = require('./registermanager.js');
 const argv = require('yargs').argv;
 
 const PORT = 8000;
-//global.URL = "http://doc.gold.ac.uk/usr/215"
-global.URL = "";
+global.URL = "http://doc.gold.ac.uk/usr/215"
+//global.URL = "";
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
