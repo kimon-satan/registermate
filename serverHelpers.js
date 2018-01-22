@@ -3,6 +3,7 @@ const monk = require('monk');
 const db = monk("localhost:27017/registermate");
 const users = db.get('users');
 const classes = db.get('classes');
+const ObjectId = require('mongodb').ObjectID;
 
 exports.saltAndHash = function(pw)
 {
@@ -106,15 +107,29 @@ exports.authenticateForClass = function(user, class_id)
 			else
 			{
 				//check the user is attached to class or is admin
-				if(data.teachers.includes(ObjectId(user._id)) || role == "admin")
+
+				if(role == "admin")
 				{
 					//find the teacher
 					resolve("Authorised");
 				}
 				else
 				{
-					reject("Unauthorised request");
+					var isAuth = false;
+					for(var i = 0; i < data.teachers.length; i++)
+					{
+
+						if(data.teachers[i].username == user.username){
+							resolve("Authorised");
+							isAuth = true;
+							break;
+						}
+					}
+
+					if(!isAuth)reject("Unauthorised request");
+
 				}
+
 			}
 
 		})
