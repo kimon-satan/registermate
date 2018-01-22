@@ -173,13 +173,33 @@ $(document).ready(function()
 
 	$('#emailAbsentees').on("click",function(e)
 	{
+		var r = $.get("/absenteeemail", {
+			class: classDoc._id,
+			personaltext: $('#personalText').val()
+		},
+		function(res)
+		{
+			$('#emailBody').empty();
+			$('#emailBody').append(res);
+			$('#emailDialog').modal('toggle');
+		});
+
+	})
+
+	$('#confirmEmail').on("click",function(e)
+	{
+		//confirm on click
 		$.post("/emailabsentees", {
-			class: classDoc._id
-		}, function(res)
+			class: classDoc._id,
+			personaltext: $('#personalText').val()
+		},
+		function(res)
 		{
 			alert(res);
 		})
 	})
+
+
 
 	$(document).on("click",".attendance",function(e){
 
@@ -188,13 +208,13 @@ $(document).ready(function()
 		modal_sessionnum = Number(elem.attr('sessionnum'));
 
 		var str = "<p>Change " + modal_username + "'s status for session " + (modal_sessionnum + 1) + " to ... </p>";
-		$('.modal-body').empty();
-		$('.modal-body').append(str);
-		$('#mydialog').modal('toggle');
+		$('#toggleAttendanceBody').empty();
+		$('#toggleAttendanceBody').append(str);
+		$('#toggleAttendanceDialog').modal('toggle');
 
 	})
 
-	$(".dbutton").on("click",function(e)
+	$(".tabutton").on("click",function(e)
 	{
 		var status = e.target.id.substring(0,1).toUpperCase();
 		if(status == "P")status = "X";
@@ -210,7 +230,6 @@ $(document).ready(function()
 	})
 
 
-	//TODO send email
 	//TODO download csv
 
 	function updateFunction()

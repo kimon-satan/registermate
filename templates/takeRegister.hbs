@@ -102,27 +102,50 @@
 		</div>
 
 	</div>
-<!-- dialog box -->
+<!-- dialog boxes -->
 		<div class="container-fluid">
-			<div id="mydialog" class="modal fade" tabindex="-1" role="dialog">
+			<div id="toggleAttendanceDialog" class="modal fade" tabindex="-1" role="dialog">
 				<div class="modal-dialog" role="document">
 					<div class="modal-content">
 						<div class="modal-header">
 							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 							<h4 class="modal-title">Change student status</h4>
 						</div>
-						<div class="modal-body">
+						<div id="toggleAttendanceBody" class="modal-body">
 							<p>default text</p>
 						</div>
 						<div class="modal-footer">
-							<button type="button" id="present" class="dbutton btn btn-default present" data-dismiss="modal">Present</button>
-							<button type="button" id="absent" class="dbutton btn btn-default absent" data-dismiss="modal">Absent</button>
-							<button type="button" id="late" class="dbutton btn btn-default late" data-dismiss="modal">Late</button>
-							<button type="button" id="unregistered" class="dbutton btn btn-default" data-dismiss="modal">Unregistered</button>
+							<button type="button" id="present" class="tabutton btn btn-default present" data-dismiss="modal">Present</button>
+							<button type="button" id="absent" class="tabutton btn btn-default absent" data-dismiss="modal">Absent</button>
+							<button type="button" id="late" class="tabutton btn btn-default late" data-dismiss="modal">Late</button>
+							<button type="button" id="unregistered" class="tabutton btn btn-default" data-dismiss="modal">Unregistered</button>
 						</div>
 					</div><!-- /.modal-content -->
 				</div><!-- /.modal-dialog -->
 			</div><!-- /.modal -->
+
+			<div class="container-fluid">
+				<div id="emailDialog" class="modal fade" tabindex="-1" role="dialog">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+								<h4 class="modal-title">Email absentee students</h4>
+							</div>
+							<div class="modal-body">
+								<h4>You are about to send the following email to absentee students.</h4>
+								<div id="emailBody"></div>
+								<div>
+									<h4>Are you sure you want to send this ?</h4>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" id="confirmEmail" class="dbutton btn btn-default btn-success" data-dismiss="modal">Send it</button>
+								<button type="button" class="btn btn-default btn-danger" data-dismiss="modal">Cancel</button>
+							</div>
+						</div><!-- /.modal-content -->
+					</div><!-- /.modal-dialog -->
+				</div><!-- /.modal -->
 
 	<script src="clientscripts/takeRegister.js"></script>
 </body>

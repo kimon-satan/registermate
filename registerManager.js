@@ -281,6 +281,39 @@ function RegisterManager(app)
 
 	});
 
+	app.get("/absenteeemail", (req,res) =>
+	{
+		users.findOne({username: req.session.username},{fields: {firstname: 1, email: 1}})
+
+		.then((doc)=>
+		{
+			teacherDoc = doc;
+			//find the class
+			return classes.findOne(ObjectId(req.query.class));
+		})
+
+		.then((doc)=>
+		{
+
+				res.render(__dirname + '/templates/absentMessage.hbs',
+				{ username: "Xxxxx",
+					sessionnum: Number(doc.currentsession) + 1,
+					numsessions: doc.sessionarray.length,
+					classname: doc.classname,
+					numabsences: "x",
+					personaltext: req.query.personaltext,
+					teachername: teacherDoc.firstname
+				});
+		})
+
+		.catch((err)=>
+		{
+			console.log(err);
+			res.status(400).send(err);
+		})
+
+	})
+
 	app.post("/emailabsentees", (req,res) =>
 	{
 		var classDoc;
@@ -342,11 +375,12 @@ function RegisterManager(app)
 					{
 
 						res.render(__dirname + '/templates/absentMessage.hbs',
-						{ username: doc.username,
+						{ username: doc.firstname,
 							sessionnum: Number(classDoc.currentsession) + 1,
 							numsessions: classDoc.sessionarray.length,
 							classname: classDoc.classname,
 							numabsences: numabsences,
+							personaltext: req.body.personaltext,
 							teachername: teacherDoc.firstname
 						}, function(err, html)
 						{
@@ -389,6 +423,7 @@ function RegisterManager(app)
 							else
 							{
 								console.log(info);
+								console.log(mail);
 							}
 
 						});

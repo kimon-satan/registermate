@@ -1,11 +1,11 @@
 
 3. implement register interface ! (95%)
-	- email absentees
 	- download csv
 	- auto-close after 60mins
 	- warnings for stupid actions
 	- hover over for stats
 	- reset register button
+	- override alert boxes to bootstrap
 
 4. check VM deployment
 5. admin students (basic)
