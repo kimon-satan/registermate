@@ -31,6 +31,8 @@ function ClassManager(app)
 		var d = JSON.parse(data);
 		departmentList = Object.keys(d);
 		departmentList.sort();
+		
+		console.log(d);
 
 		//iterate through departments
 		Object.keys(d).forEach(function(item)
