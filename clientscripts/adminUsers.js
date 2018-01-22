@@ -14,7 +14,6 @@ $(document).ready(function()
 		var _id = e.target.parentElement.parentElement.id;
 		$.post(server_url +"/changerole", {_id: _id}, function(res)
 		{
-			console.log(res);
 			updateRow(_id);
 		})
 		.fail(function(res){
@@ -32,7 +31,6 @@ $(document).ready(function()
 		{
 			$.post(server_url + "/removeuser", {_id: _id}, function(res)
 			{
-				console.log(res, _id);
 				$('#' + _id).remove();
 			})
 			.fail(function(res){

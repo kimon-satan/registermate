@@ -6,7 +6,7 @@ $(document).ready(function(){
 	var isMultiple = false;
 	var classDoc = {};
 
-	$.get("/departmentlist",function(res)
+	$.get(server_url +"/departmentlist",function(res)
 	{
 		for(var i = 0; i < res.length; i++)
 		{
@@ -18,7 +18,7 @@ $(document).ready(function(){
 	$("#departmentInput").on("change", function(e)
 	{
 		var department = $('#departmentInput').val();
-		$.get("/modulelist", {department: department}, function(res)
+		$.get(server_url +"/modulelist", {department: department}, function(res)
 		{
 			$('#moduleInput').empty();
 			moduleList = res;

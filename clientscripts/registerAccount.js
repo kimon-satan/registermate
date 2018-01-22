@@ -1,6 +1,6 @@
 $(document).ready(function(e) {
 
-	$.get("/departmentlist",function(res)
+	$.get(server_url +"/departmentlist",function(res)
 	{
 		for(var i = 0; i < res.length; i++)
 		{

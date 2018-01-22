@@ -29,7 +29,7 @@ $(document).ready(function()
 
 		var _id = $("#classInput").val();
 		if(_id == "none")classDoc = undefined;
-		var req = $.get("/classdoc",{_id: _id} ,function(res){
+		var req = $.get(server_url +"/classdoc",{_id: _id} ,function(res){
 			classDoc = res;
 			//updateStudents();
 			$('#sessionInput').empty();
@@ -90,7 +90,7 @@ $(document).ready(function()
 		classDoc.classpass = classDoc.classpass.trim();
 		classDoc.classpass = classDoc.classpass.toLowerCase();
 
-		$.post("/openregister",
+		$.post(server_url +"/openregister",
 		{class: classDoc._id, classpass: classDoc.classpass},
 		function(res){
 			classDoc = res;
@@ -104,7 +104,7 @@ $(document).ready(function()
 	$("#end").click(function()
 	{
 		//close the register !
-		$.post("/closeregister",
+		$.post(server_url +"/closeregister",
 		{class: classDoc._id},
 		function(res){
 			classDoc = res;
@@ -121,7 +121,7 @@ $(document).ready(function()
 	{
 		var n = Number($("#sessionInput").val());
 
-		$.post("/changecurrentsession",
+		$.post(server_url +"/changecurrentsession",
 		{class: classDoc._id, currentsession: n},
 		function(res)
 		{
@@ -146,7 +146,7 @@ $(document).ready(function()
 		if(classDoc != undefined || classDoc != "none")
 		{
 			classDoc.marklate = $('#' + e.target.id).prop('checked');
-			$.post('/setclassparameter', {class: classDoc._id, marklate: classDoc.marklate});
+			$.post(server_url + '/setclassparameter', {class: classDoc._id, marklate: classDoc.marklate});
 		}
 		else
 		{
@@ -163,7 +163,7 @@ $(document).ready(function()
 			{
 				classDoc.latetime = 0;
 			}
-			$.post('/setclassparameter', {class: classDoc._id, latetime: classDoc.latetime});
+			$.post(server_url + '/setclassparameter', {class: classDoc._id, latetime: classDoc.latetime});
 		}
 		else
 		{
@@ -173,7 +173,7 @@ $(document).ready(function()
 
 	$('#emailAbsentees').on("click",function(e)
 	{
-		var r = $.get("/absenteeemail", {
+		var r = $.get(server_url +"/absenteeemail", {
 			class: classDoc._id,
 			personaltext: $('#personalText').val()
 		},
@@ -189,7 +189,7 @@ $(document).ready(function()
 	$('#confirmEmail').on("click",function(e)
 	{
 		//confirm on click
-		$.post("/emailabsentees", {
+		$.post(server_url +"/emailabsentees", {
 			class: classDoc._id,
 			personaltext: $('#personalText').val()
 		},
@@ -201,8 +201,7 @@ $(document).ready(function()
 
 	$('#download').on("click", function(e)
 	{
-		console.log(classDoc);
-		$.get("/classregisterfile",
+		$.get(server_url +"/classregisterfile",
 		{
 			class: classDoc._id
 		},
@@ -240,7 +239,7 @@ $(document).ready(function()
 	{
 		var status = e.target.id.substring(0,1).toUpperCase();
 		if(status == "P")status = "X";
-		$.post("/changestudentstatus",
+		$.post(server_url +"/changestudentstatus",
 		{
 			class: classDoc._id,
 			username: modal_username,
@@ -318,7 +317,7 @@ $(document).ready(function()
 	{
 		//load the students
 		var p = new Promise(function(resolve, reject){
-			var req = $.get("/classstudents", {_id: classDoc._id}, function(res){
+			var req = $.get(server_url +"/classstudents", {_id: classDoc._id}, function(res){
 				$('#registerBody').empty();
 
 				numStudents = res.length;

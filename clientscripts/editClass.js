@@ -2,7 +2,7 @@ $(document).ready(function(){
 
 	var classDoc;
 	//Load the user's classes
-	var req = $.get("userclasses", function(res){
+	var req = $.get(server_url + "/userclasses", function(res){
 		console.log(res)
 		var sInput = $('#classInput')
 		var iInput = $('#importInput')
@@ -18,7 +18,7 @@ $(document).ready(function(){
 	});
 
 	//load department list
-	$.get("/departmentlist",function(res)
+	$.get(server_url +"/departmentlist",function(res)
 	{
 		for(var i = 0; i < res.length; i++)
 		{
@@ -37,7 +37,7 @@ $(document).ready(function(){
 	$("#departmentInput").on("change", function(e)
 	{
 		var department = $('#departmentInput').val();
-		$.get("/teachers", {department: department}, function(res)
+		$.get(server_url +"/teachers", {department: department}, function(res)
 		{
 			$('#teacherInput').empty();
 			for(var i = 0; i < res.length; i++)
@@ -52,7 +52,7 @@ $(document).ready(function(){
 
 		var _id = $("#classInput").val();
 		if(_id == "none")classDoc = undefined;
-		var req = $.get("/classdoc",{_id: _id} ,function(res){
+		var req = $.get(server_url +"/classdoc",{_id: _id} ,function(res){
 			classDoc = res;
 			updateTeachers();
 			updateStudents();
@@ -95,7 +95,7 @@ $(document).ready(function(){
 
 		if(c)
 		{
-			$.post("/changenumsessions", {class: classDoc._id, num: n}, function(res)
+			$.post(server_url +"/changenumsessions", {class: classDoc._id, num: n}, function(res)
 			{
 				classDoc = res;
 				alert("All records have been updated. There are now " + classDoc.sessionarray.length + " sessions in this class.");
@@ -121,7 +121,7 @@ $(document).ready(function(){
 			alert("Choose a teacher first.");
 			return;
 		}
-		var req = $.post("/addteacher", {class: classDoc._id, teacher: _id},
+		var req = $.post(server_url +"/addteacher", {class: classDoc._id, teacher: _id},
 		function(res){
 		 classDoc = res;
 			updateTeachers();
@@ -143,7 +143,7 @@ $(document).ready(function(){
 			var c = confirm(str);
 			if(c)
 			{
-				$.post("/removeclass", {class: classDoc._id}, function(res){
+				$.post(server_url +"/removeclass", {class: classDoc._id}, function(res){
 					window.location = server_url + "/teacher";
 				})
 			}
@@ -156,7 +156,7 @@ $(document).ready(function(){
 		if(confirm(str))
 		{
 			var _id = e.target.id;
-			var req = $.post("/removeteacher", {class: classDoc._id, teacher: _id},
+			var req = $.post(server_url +"/removeteacher", {class: classDoc._id, teacher: _id},
 			function(res)
 			{
 			 classDoc = res;
@@ -172,7 +172,7 @@ $(document).ready(function(){
 		if(confirm(str))
 		{
 			var _id = e.target.id;
-			var req = $.post("/removestudentfromclass", {class: classDoc._id, student: _id},
+			var req = $.post(server_url +"/removestudentfromclass", {class: classDoc._id, student: _id},
 			function(res)
 			{
 				updateStudents();
@@ -211,7 +211,7 @@ $(document).ready(function(){
 
 		if(studentsArray.length > 0)
 		{
-			$.post("/addstudents", {class: classDoc._id, students: studentsArray}, function(res)
+			$.post(server_url +"/addstudents", {class: classDoc._id, students: studentsArray}, function(res)
 			{
 				alert(res);
 				updateStudents();
@@ -238,7 +238,7 @@ $(document).ready(function(){
 	function updateStudents()
 	{
 		$('#studentsTable').empty();
-		var req = $.get("/classstudents", {_id: classDoc._id}, function(res){
+		var req = $.get(server_url +"/classstudents", {_id: classDoc._id}, function(res){
 			for(var i = 0; i < res.length; i++)
 			{
 				var row = $('<tr></tr>');
