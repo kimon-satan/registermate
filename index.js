@@ -112,7 +112,6 @@ app.get('/student', (req, res) =>
 })
 app.get('/teacher', (req, res) =>
 	{
-		console.log(req.session);
 		if (req.session.username != null && req.session.password != null)
 		{
 				// Already logged in.

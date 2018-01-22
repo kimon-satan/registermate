@@ -1,10 +1,9 @@
 
-3. implement register interface ! (90%)
+3. implement register interface ! (95%)
 	- email absentees
 	- download csv
 	- auto-close after 60mins
 	- warnings for stupid actions
-	- destroy session tokens for start of register
 	- hover over for stats
 	- reset register button
 
@@ -16,6 +15,7 @@
 
 For later ...
 
+- Reset tokens expire !
 - Deal with wrong class registration (student side)
 - Deal with opening register when students are open for another class
 - Dealing with name discrepancies.

@@ -171,6 +171,16 @@ $(document).ready(function()
 		}
 	})
 
+	$('#emailAbsentees').on("click",function(e)
+	{
+		$.post("/emailabsentees", {
+			class: classDoc._id
+		}, function(res)
+		{
+			alert(res);
+		})
+	})
+
 	$(document).on("click",".attendance",function(e){
 
 		var elem = $('#' + e.target.id);

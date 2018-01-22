@@ -350,7 +350,8 @@ function ClassManager(app)
 					attendanceArray.push("U");
 				}
 
-				var p = req.body.students.map((student)=>{
+				var p = req.body.students.map((student)=>
+				{
 					var regObject = {};
 					return students.findOne({username: student.username})
 					.then((doc)=>{

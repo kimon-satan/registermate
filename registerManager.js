@@ -281,6 +281,147 @@ function RegisterManager(app)
 
 	});
 
+	app.post("/emailabsentees", (req,res) =>
+	{
+		var classDoc;
+		var teacherDoc;
+		var numEmails = 0;
+
+		var auth = {
+			username: req.session.username,
+			password: req.session.password
+		}
+
+		helpers.authenticateForClass(auth, req.body.class)
+
+		.then((doc)=>
+		{
+			//find the user
+			return users.findOne({username: req.session.username},{fields: {firstname: 1, email: 1}});
+		})
+
+		.then((doc)=>
+		{
+			teacherDoc = doc;
+			//find the class
+			return classes.findOne(ObjectId(req.body.class));
+		})
+
+		.then((doc)=>
+		{
+			classDoc = doc;
+
+			//find students marked absent for current session
+			var qobj = {class_id: ObjectId(req.body.class)};
+			qobj["attendance." + classDoc.currentsession] = "A";
+			return registers.find(qobj);
+		})
+
+		.then((docs)=>
+		{
+
+			//compile an email list
+			var p = docs.map((doc)=>
+			{
+				//get num absensces
+				var numabsences = 0;
+				for(var i = 0; i < doc.attendance.length; i++)
+				{
+					if(doc.attendance[i] == "A")
+					{
+						numabsences += 1;
+					}
+				}
+
+				//get student record
+				return students.findOne(doc.student_id)
+				.then((doc)=>
+				{
+					var email = doc.username + "@gold.ac.uk";
+					var tp = new Promise(function(resolve, reject)
+					{
+
+						res.render(__dirname + '/templates/absentMessage.hbs',
+						{ username: doc.username,
+							sessionnum: Number(classDoc.currentsession) + 1,
+							numsessions: classDoc.sessionarray.length,
+							classname: classDoc.classname,
+							numabsences: numabsences,
+							teachername: teacherDoc.firstname
+						}, function(err, html)
+						{
+								if(err){
+									reject(err);
+								}
+								else
+								{
+									resolve({html: html, email: email});
+								}
+						});
+					})
+
+					return tp;
+
+				})
+
+				.then((doc)=>
+				{
+
+
+					var mail =
+					{
+						from: teacherDoc.email, // sender address
+						to: doc.email, // list of receivers
+						subject: 'missed session', // Subject line
+						html: doc.html // html body
+					};
+
+					if(app.transporter)
+					{
+						numEmails += 1;
+						// send mail with defined transport object
+						app.transporter.sendMail(mail, (error, info) =>
+						{
+							if(error)
+							{
+								console.log(error);
+							}
+							else
+							{
+								console.log(info);
+							}
+
+						});
+
+						//we don't wait for the mails to be sent before reporting back
+						return Promise.resolve();
+					}
+					else
+					{
+						return Promise.reject("Nodemailer was not initialised. Here's what you would have sent..." + mail);
+					}
+
+				});
+
+			});
+
+			return Promise.all(p);
+
+		})
+
+		.then(()=>
+		{
+			res.send(numEmails + " emails have been sent to absentees of this session.");
+		})
+
+		.catch((err)=>
+		{
+			console.log(err);
+			res.status(400).send(err);
+		})
+
+	});
+
 
 
 	//////////////////////////////STUDENT METHODS/////////////////////////
@@ -455,6 +596,7 @@ function RegisterManager(app)
 		})
 
 	})
+
 
 
 }
