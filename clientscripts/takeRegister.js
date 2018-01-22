@@ -159,10 +159,6 @@ $(document).ready(function()
 		if(classDoc != undefined || classDoc != "none")
 		{
 			classDoc.latetime = $('#' + e.target.id).val();
-			if(classDoc.latetime == "never")
-			{
-				classDoc.latetime = 0;
-			}
 			$.post(server_url + '/setclassparameter', {class: classDoc._id, latetime: classDoc.latetime});
 		}
 		else
