@@ -394,14 +394,19 @@ function Accounts(app)
 			password: req.session.password
 		}
 
-		helpers.authenticateUser(auth, users, true)
+		helpers.authenticateUser(auth, users, false)
 
 		.then(function(data){
 
 			if(data.valid)
 			{
+				var f = {username: 1, firstname: 1, surname: 1};
+				if(data.role == "admin")
+				{
+					f.email = 1;
+				}
 				//search here
-				return users.find({department: req.query.department},{fields: {username: 1, firstname: 1, surname: 1, email: 1}, sort:{firstname: 1}});
+				return users.find({department: req.query.department},{fields: f, sort:{firstname: 1}});
 			}
 			else
 			{
@@ -414,6 +419,7 @@ function Accounts(app)
 		})
 
 		.catch((err)=>{
+			console.log(err);
 			res.status(400).send(err);
 		})
 

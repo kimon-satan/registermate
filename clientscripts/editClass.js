@@ -205,7 +205,12 @@ $(document).ready(function(){
 			}
 			else
 			{
-				alert("line " + i + "\n\n'" + lines[i] +"'\n\n is formatted incorrectly and has not been added.\n" );
+				var b = confirm("line " + i + "\n\n'" + lines[i] +"'\n\n is formatted incorrectly and has not been added.\n" );
+				if(!b)
+				{
+					studentsArray = []; //we won't add any students then
+					break;
+				}
 			}
 		}
 

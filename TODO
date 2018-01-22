@@ -1,4 +1,4 @@
-4. check VM deployment
+Bug fixes
 
 5. admin students (basic)
 	- just list them + add and remove
@@ -11,16 +11,16 @@
 	- warnings for stupid actions
 	- hover over for stats
 	- reset register button
-	- override alert boxes to bootstrap
+
 
 
 For later ...
 
-- Reset tokens expire !
 - Deal with wrong class registration (student side)
 - Deal with opening register when students are open for another class
 - Dealing with name discrepancies.
 - import data from an existing class (hide this button for now)
+- override alert boxes to bootstrap
 
 ///////////////////////////////
 

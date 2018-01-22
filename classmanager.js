@@ -97,6 +97,7 @@ function ClassManager(app)
 		})
 
 		.catch((err)=>{
+			console.log(err);
 			res.status(400).send(err);
 		})
 	})
@@ -224,7 +225,7 @@ function ClassManager(app)
 			password: req.session.password
 		}
 
-		helpers.authenticateForClass(auth, req.query._id)
+		helpers.authenticateForClass(auth, req.body.class)
 
 		.then((data)=>{
 			//find the teacher
@@ -255,6 +256,7 @@ function ClassManager(app)
 		})
 
 		.catch((err)=>{
+			console.log(err);
 			res.status(400).send(err);
 		})
 	})
