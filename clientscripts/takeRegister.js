@@ -2,8 +2,8 @@ $(document).ready(function()
 {
 	var classDoc;
 	var updateProc;
-	var numPresent;
-	var numStudents;
+	var numPresent = [0,0,0,0,0,0,0,0,0,0];
+	var numStudents = 0;
 	var modal_username;
 	var modal_sessionnum;
 
@@ -49,19 +49,11 @@ $(document).ready(function()
 			$('#sessionInput').val(classDoc.currentsession);
 			$('#lateTime').val(classDoc.latetime);
 
-			//Load the table header
-			$('#registerHeader').empty();
-			var row = $('<tr class="table-bordered"></tr');
-			row.append("<th>student</th>")
-			for(var i = 0; i < classDoc.sessionarray.length; i++)
-			{
-				var cell = $("<th class='session_" + (i+1) + "'>session "+ (i + 1) + "</th>");
-				row.append(cell);
-			}
-			$('#registerHeader').append(row)
+
 
 			updateRegister()
 			.then(()=>{
+				updateTableHeader();
 				if(!classDoc.classpass)
 				{
 					setHTMLClosed();
@@ -82,13 +74,24 @@ $(document).ready(function()
 
 	$("#start").click(function()
 	{
-		//TODO check that a passphrase has been entered
 		//TODO check whether students are engaged in another class and warn if necessary
 
 		//open the register !
 		classDoc.classpass = $('#password').val();
 		classDoc.classpass = classDoc.classpass.trim();
 		classDoc.classpass = classDoc.classpass.toLowerCase();
+
+		if(classDoc.classpass.length == 0)
+		{
+			alert("You need to set a one time class pass first");
+			return;
+		}
+
+		if(classDoc.sessionarray[classDoc.currentsession] != "U")
+		{
+			var c = confirm("The register has already been taken for this session once. Are you sure you want to open it again ?");
+			if(!c)return;
+		}
 
 		$.post(server_url +"/openregister",
 		{class: classDoc._id, classpass: classDoc.classpass},
@@ -110,6 +113,7 @@ $(document).ready(function()
 			classDoc = res;
 			updateRegister()
 			.then(()=>{
+				updateTableHeader();
 				setHTMLClosed();
 				window.clearInterval(updateProc);
 			})
@@ -159,10 +163,6 @@ $(document).ready(function()
 		if(classDoc != undefined || classDoc != "none")
 		{
 			classDoc.latetime = $('#' + e.target.id).val();
-			if(classDoc.latetime == "never")
-			{
-				classDoc.latetime = 0;
-			}
 			$.post(server_url + '/setclassparameter', {class: classDoc._id, latetime: classDoc.latetime});
 		}
 		else
@@ -246,12 +246,14 @@ $(document).ready(function()
 			sessionnum: modal_sessionnum,
 			status: status
 		}, function(){
-			updateRegister();
+			updateRegister().then(()=>{
+				updateTableHeader();
+			});
 		});
 	})
 
 
-	//TODO download csv
+
 
 	function updateFunction()
 	{
@@ -259,6 +261,18 @@ $(document).ready(function()
 		var m = Date.now() - classDoc.sessionarray[classDoc.currentsession];
 		var d = new Date(m);
 		var t = [ d.getHours().toString(), d.getMinutes().toString(), d.getSeconds().toString()];
+
+		if(d.getSeconds()%30 == 0)
+		{
+			$.get(server_url +"/classdoc",{_id: classDoc._id} ,function(res)
+			{
+				classDoc = res;
+				if(classDoc.classpass == null)
+				{
+					setHTMLClosed();
+				}
+			})
+		}
 
 		for(var i = 0; i < 3; i++)
 		{
@@ -282,7 +296,9 @@ $(document).ready(function()
 		$('#attendance').empty();
 		$('#attendance').append("<p><b>Attendence: </b>" + (np*100/numStudents).toFixed(0) + "%</p>");
 
-		updateRegister();
+		updateRegister().then(()=>{
+			updateTableHeader();
+		})
 	}
 
 	function setHTMLClosed()
@@ -311,6 +327,28 @@ $(document).ready(function()
 		$('th.'+c).removeClass("danger");
 		$('th.'+c).addClass("success");
 		$('#password').attr("disabled", "disabled");
+	}
+
+	function updateTableHeader(){
+		//Load the table header
+		$('#registerHeader').empty();
+		var row = $('<tr class="table-bordered"></tr');
+		row.append("<th>student</th>")
+		for(var i = 0; i < classDoc.sessionarray.length; i++)
+		{
+			var str = "session " + (i + 1);
+			if(classDoc.sessionarray[i] != "U")
+			{
+				str += "<br>" + "<p>" + (numPresent[i]*100/numStudents).toFixed(0) + "%</p>"
+			}
+			else
+			{
+				str += "<br>" + "<p>0%</p>"
+			}
+			var cell = $("<th class='session_" + (i+1) + "'>" + str + "</th>");
+			row.append(cell);
+		}
+		$('#registerHeader').append(row);
 	}
 
 	function updateRegister()

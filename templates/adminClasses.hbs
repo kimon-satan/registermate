@@ -1,0 +1,28 @@
+<html>
+{{> header}}
+<body>
+	<div class="container-fluid">
+		{{> topbar}}
+		<h1>Registermate</h1>
+		<h3>Admin classes</h3>
+
+		<div class="table-responsive">
+			<table class="table table-bordered table-condensed">
+				<thead class="table table-bordered table-condensed">
+					<tr>
+					<th>Classname</th>
+					<th>Modules</th>
+					<th>Teachers</th>
+					<th>Sessions</th>
+					<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody id="usertable" class="table table-bordered table-condensed">
+				</tbody>
+			</table>
+		</div>
+		<button id="showmore" class="btn btn-info">show more</button>
+	</div>
+	<script src="/clientscripts/adminClasses.js"></script>
+</body>
+</html>

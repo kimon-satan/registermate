@@ -50,6 +50,98 @@ function ClassManager(app)
 		});
 	})
 
+	///////////////////////////////////////////////////////
+
+	setInterval(function(){
+
+		//find classes which are currently open
+
+		classes.find({classpass: {$ne: null}})
+
+		.then((doc)=>
+		{
+			doc.forEach(function(classdoc){
+				var t = classdoc.sessionarray[Number(classdoc.currentsession)];
+				var d = Date.now();
+				var diff = d - t;
+				if(diff > 60 * 60 * 1000) //close any class after 1 hour
+				{
+					//close the class
+					classes.update(classdoc._id, {$set: {classpass: null}})
+
+					.then((doc)=>
+					{
+						return registers.find({class_id: classdoc._id});
+					})
+
+					.then((docs)=>
+					{
+						var p = docs.map((doc)=>{
+							//mark student absent if Unregistered
+							var i = Number(classdoc.currentsession);
+							if(doc.attendance[i] == "U")
+							{
+								doc.attendance[i] = "A";
+								return registers.update(doc._id, {$set: {attendance: doc.attendance}});
+							}
+						})
+
+						return Promise.all(p);
+					})
+
+					.then((doc)=>
+					{
+						//reset only those students who have this class as their current one
+						return students.find({currentclass: String(classdoc._id)});
+					})
+
+					.then((docs)=>
+					{
+
+						docs.forEach(function(item){
+							//destroy session
+							if(item.session_id)
+							{
+								global.sessionstore.destroy(item.session_id,function(error){
+									console.log(error)
+								});
+								students.update(item._id, {$set: {session_id: null, currentclass: null}});
+							}
+						})
+
+					})
+				}
+
+			})
+		})
+
+	},1000);
+
+	/////////////////////////////////////////////////////////
+
+	app.get('/adminclasses', (req ,res) => {
+
+		helpers.authenticateUser(req.session, users, true)
+
+		.then((data) =>{
+
+			if(data.valid)
+			{
+				res.render(__dirname + "/templates/adminClasses.hbs", {SERVER_URL: URL})
+			}
+			else
+			{
+				return Promise.reject("Error: Access forbidden");
+			}
+
+		})
+
+		.catch((message)=>
+		{
+			res.status(400).send(message);
+		})
+	})
+
 	app.get('/departmentlist', (req,res) =>
 	{
 		//get the list of departments
@@ -616,6 +708,50 @@ function ClassManager(app)
 			res.status(400).send(err);
 		})
 
+	})
+
+	app.get('/classdata', (req,res) =>
+	{
+
+		helpers.authenticateUser(req.session, users, true)
+
+		.then((data) =>{
+
+			if(data.valid)
+			{
+
+				var idx = (req.query.idx != undefined) ? Number(req.query.idx) : 0;
+				var items = (req.query.items != undefined) ? Number(req.query.items) : 50;
+				var query = {};
+				if(req.query.module != undefined)query.module = req.query.module; //TODO account for duel
+				if(req.query._id != undefined)query._id = req.query._id;
+				//if(req.query.departments != undefined)query.departments = req.query.departments; //TODO
+
+				return classes.find(
+					query,
+					{fields: {classname: 1, module: 1, modules: 1, teachers: 1, sessionarray: 1},
+					sort: {classname: 1},
+					skip: idx, limit: items}
+				);
+			}
+			else
+			{
+				return Promise.reject("Error: Access forbidden");
+			}
+
+		})
+
+		.then((docs)=>{
+
+			res.json(docs);
+
+		})
+
+
+		.catch((message)=>
+		{
+			res.status(400).send(message);
+		})
 	})
 
 }
