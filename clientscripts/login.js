@@ -4,6 +4,7 @@ $('#submit').on('click', function(e){
 	ud.username = $('#username').val();
 	ud.password = $('#password').val();
 
+
 	e.preventDefault();
 
 	var req = $.post(
