@@ -256,6 +256,18 @@ $(document).ready(function()
 		var d = new Date(m);
 		var t = [ d.getHours().toString(), d.getMinutes().toString(), d.getSeconds().toString()];
 
+		if(d.getSeconds()%30 == 0)
+		{
+			$.get(server_url +"/classdoc",{_id: classDoc._id} ,function(res)
+			{
+				classDoc = res;
+				if(classDoc.classpass == null)
+				{
+					setHTMLClosed();
+				}
+			})
+		}
+
 		for(var i = 0; i < 3; i++)
 		{
 			var pad = "00";

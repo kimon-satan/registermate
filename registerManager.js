@@ -201,13 +201,12 @@ function RegisterManager(app)
 		.then((doc)=>
 		{
 			//reset only those students who have this class as their current one
-			students.update({currentclass: req.body.class},{$set: {currentclass: null}},{multi: true});
 			return students.find({currentclass: req.body.class});
 		})
 
 		.then((docs)=>
 		{
-			//reset only those students who have this class as their current one
+
 			docs.forEach(function(item){
 				//destroy session
 				if(item.session_id)
@@ -215,7 +214,7 @@ function RegisterManager(app)
 					global.sessionstore.destroy(item.session_id,function(error){
 						console.log(error)
 					});
-					students.update(item._id, {$set: {session_id: null}});
+					students.update(item._id, {$set: {session_id: null, currentclass: null}});
 				}
 			})
 
@@ -859,7 +858,7 @@ function RegisterManager(app)
 		{
 			res.status(400).send(message);
 		})
-		
+
 	})
 
 

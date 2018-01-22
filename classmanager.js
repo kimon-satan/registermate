@@ -50,6 +50,75 @@ function ClassManager(app)
 		});
 	})
 
+	///////////////////////////////////////////////////////
+
+	setInterval(function(){
+
+		//find classes which are currently open
+
+		classes.find({classpass: {$ne: null}})
+
+		.then((doc)=>
+		{
+			doc.forEach(function(classdoc){
+				var t = classdoc.sessionarray[Number(classdoc.currentsession)];
+				var d = Date.now();
+				var diff = d - t;
+				if(diff > 60 * 60 * 1000) //close any class after 1 hour
+				{
+					//close the class
+					classes.update(classdoc._id, {$set: {classpass: null}})
+
+					.then((doc)=>
+					{
+						return registers.find({class_id: classdoc._id});
+					})
+
+					.then((docs)=>
+					{
+						var p = docs.map((doc)=>{
+							//mark student absent if Unregistered
+							var i = Number(classdoc.currentsession);
+							if(doc.attendance[i] == "U")
+							{
+								doc.attendance[i] = "A";
+								return registers.update(doc._id, {$set: {attendance: doc.attendance}});
+							}
+						})
+
+						return Promise.all(p);
+					})
+
+					.then((doc)=>
+					{
+						//reset only those students who have this class as their current one
+						return students.find({currentclass: String(classdoc._id)});
+					})
+
+					.then((docs)=>
+					{
+
+						docs.forEach(function(item){
+							//destroy session
+							if(item.session_id)
+							{
+								global.sessionstore.destroy(item.session_id,function(error){
+									console.log(error)
+								});
+								students.update(item._id, {$set: {session_id: null, currentclass: null}});
+							}
+						})
+
+					})
+				}
+
+			})
+		})
+
+	},1000);
+
+	/////////////////////////////////////////////////////////
+
 	app.get('/adminclasses', (req ,res) => {
 
 		helpers.authenticateUser(req.session, users, true)
