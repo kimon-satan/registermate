@@ -468,16 +468,17 @@ function RegisterManager(app)
 		var classDoc;
 		var fileString = "";
 
-		helpers.authenticateForClass(auth, req.body.class)
+		helpers.authenticateForClass(auth, req.query.class)
 
 		.then(()=>
 		{
 			//find the class
-			return classes.findOne(req.body.class);
+			return classes.findOne(req.query.class);
 		})
 
 		.then((doc)=>
 		{
+			console.log(doc);
 			classDoc = doc;
 			//create the header
 			var header = "Registermate Download\n";
@@ -573,7 +574,7 @@ function RegisterManager(app)
 			}
 
 			fileString += body;
-
+			console.log(fileString);
 			res.send(fileString);
 		})
 

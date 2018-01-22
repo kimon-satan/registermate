@@ -199,7 +199,9 @@ $(document).ready(function()
 		})
 	})
 
-	$('#download').on("click", function(e){
+	$('#download').on("click", function(e)
+	{
+		console.log(classDoc);
 		$.get("/classregisterfile",
 		{
 			class: classDoc._id
