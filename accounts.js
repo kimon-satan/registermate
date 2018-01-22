@@ -26,7 +26,8 @@ function Accounts(app)
 				hash: data,
 				role: "teacher",
 				classes: [],
-				email: req.body.email
+				email: req.body.email,
+				department: req.body.department
 			}
 
 			return users.count()
