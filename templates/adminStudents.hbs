@@ -1,0 +1,26 @@
+<html>
+{{> header}}
+<body>
+	<div class="container-fluid">
+		{{> topbar}}
+		<h1>Registermate</h1>
+		<h3>Admin students</h3>
+
+		<table class="table table-bordered">
+			<thead class="table table-bordered">
+				<tr>
+				<th>Username</th>
+				<th>First Name</th>
+				<th>Surname</th>
+				<th>Department(s)</th>
+				<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody id="usertable" class="table table-bordered">
+			</tbody>
+		</table>
+		<button id="showmore" class="btn btn-info">show more</button>
+	</div>
+	<script src="/clientscripts/adminStudents.js"></script>
+</body>
+</html>

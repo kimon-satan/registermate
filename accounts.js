@@ -8,6 +8,29 @@ const fs = require('fs');
 function Accounts(app)
 {
 
+	app.get('/adminusers', (req ,res) => {
+
+		helpers.authenticateUser(req.session, users, true)
+
+		.then((data) =>{
+
+			if(data.valid)
+			{
+				res.render(__dirname + "/templates/adminUsers.hbs", {SERVER_URL: URL})
+			}
+			else
+			{
+				return Promise.reject("Error: Access forbidden");
+			}
+
+		})
+
+		.catch((message)=>
+		{
+			res.status(400).send(message);
+		})
+	})
+
 	app.get('/registeraccount', (req, res) =>{
 		res.render(__dirname + '/templates/registerAccount.hbs', {SERVER_URL: URL});
 	})

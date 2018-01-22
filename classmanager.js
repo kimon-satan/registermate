@@ -50,6 +50,29 @@ function ClassManager(app)
 		});
 	})
 
+	app.get('/adminclasses', (req ,res) => {
+
+		helpers.authenticateUser(req.session, users, true)
+
+		.then((data) =>{
+
+			if(data.valid)
+			{
+				res.render(__dirname + "/templates/adminClasses.hbs", {SERVER_URL: URL})
+			}
+			else
+			{
+				return Promise.reject("Error: Access forbidden");
+			}
+
+		})
+
+		.catch((message)=>
+		{
+			res.status(400).send(message);
+		})
+	})
+
 	app.get('/departmentlist', (req,res) =>
 	{
 		//get the list of departments
@@ -616,6 +639,50 @@ function ClassManager(app)
 			res.status(400).send(err);
 		})
 
+	})
+
+	app.get('/classdata', (req,res) =>
+	{
+
+		helpers.authenticateUser(req.session, users, true)
+
+		.then((data) =>{
+
+			if(data.valid)
+			{
+
+				var idx = (req.query.idx != undefined) ? Number(req.query.idx) : 0;
+				var items = (req.query.items != undefined) ? Number(req.query.items) : 50;
+				var query = {};
+				if(req.query.module != undefined)query.module = req.query.module; //TODO account for duel
+				if(req.query._id != undefined)query._id = req.query._id;
+				//if(req.query.departments != undefined)query.departments = req.query.departments; //TODO
+
+				return classes.find(
+					query,
+					{fields: {classname: 1, module: 1, modules: 1, teachers: 1, sessionarray: 1},
+					sort: {classname: 1},
+					skip: idx, limit: items}
+				);
+			}
+			else
+			{
+				return Promise.reject("Error: Access forbidden");
+			}
+
+		})
+
+		.then((docs)=>{
+
+			res.json(docs);
+
+		})
+
+
+		.catch((message)=>
+		{
+			res.status(400).send(message);
+		})
 	})
 
 }

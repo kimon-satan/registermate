@@ -21,6 +21,30 @@ teachers: [], sessionarray: [date, date, blank, blank, blank, etc... ]
 
 function RegisterManager(app)
 {
+
+	app.get('/adminstudents', (req ,res) => {
+
+		helpers.authenticateUser(req.session, users, true)
+
+		.then((data) =>{
+
+			if(data.valid)
+			{
+				res.render(__dirname + "/templates/adminStudents.hbs", {SERVER_URL: URL})
+			}
+			else
+			{
+				return Promise.reject("Error: Access forbidden");
+			}
+
+		})
+
+		.catch((message)=>
+		{
+			res.status(400).send(message);
+		})
+	})
+
 	app.get('/takeregister' , (req, res) => {
 
 		if (req.session.username != null && req.session.password != null)
@@ -759,6 +783,83 @@ function RegisterManager(app)
 			}
 		})
 
+	})
+
+	app.get('/studentdata', (req,res) =>
+	{
+
+		helpers.authenticateUser(req.session, users, true)
+
+		.then((data) =>{
+
+			if(data.valid)
+			{
+
+				var idx = (req.query.idx != undefined) ? Number(req.query.idx) : 0;
+				var items = (req.query.items != undefined) ? Number(req.query.items) : 50;
+				var query = {};
+				if(req.query.username != undefined)query.username = req.query.username;
+				if(req.query._id != undefined)query._id = req.query._id;
+				if(req.query.firstname != undefined)query.firstname = req.query.firstname;
+				if(req.query.surname != undefined)query.surname = req.query.surname;
+				//if(req.query.departments != undefined)query.departments = req.query.departments; //TODO
+
+				return students.find(
+					query,
+					{fields: {username: 1, firstname: 1, surname: 1, departments: 1},
+					sort: {username: 1},
+					skip: idx, limit: items}
+				);
+			}
+			else
+			{
+				return Promise.reject("Error: Access forbidden");
+			}
+
+		})
+
+		.then((docs)=>{
+
+			res.json(docs);
+
+		})
+
+
+		.catch((message)=>
+		{
+			res.status(400).send(message);
+		})
+	})
+
+	app.post('/removestudent', (req,res) =>
+	{
+
+		helpers.authenticateUser(req.session, users, true)
+
+		.then((data) =>{
+
+			if(data.valid)
+			{
+				students.remove(req.body._id);
+				registers.remove({student_id: ObjectId(req.body._id)});
+			}
+			else
+			{
+				return Promise.reject("Error: Access forbidden");
+			}
+
+		})
+
+		.then((docs)=>
+		{
+			res.send("student removed");
+		})
+
+		.catch((message)=>
+		{
+			res.status(400).send(message);
+		})
+		
 	})
 
 
