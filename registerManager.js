@@ -457,6 +457,113 @@ function RegisterManager(app)
 
 	});
 
+	app.get("/classregisterfile", (req, res) =>
+	{
+
+		var auth = {
+			username: req.session.username,
+			password: req.session.password
+		}
+
+		var classDoc;
+		var fileString = "";
+
+		helpers.authenticateForClass(auth, req.body.class)
+
+		.then(()=>
+		{
+			//find the class
+			return classes.findOne(req.body.class);
+		})
+
+		.then((doc)=>
+		{
+			classDoc = doc;
+			//create the header
+			var header = "Registermate Download\n";
+			var d = new Date();
+			header += "date: " + d.toDateString() + "\n";
+			header += "department: " + classDoc.department + "\n";
+			header += "classname: " + classDoc.classname + "\n";
+			header += "classtype: " + classDoc.classtype + "\n";
+			header += "term: " + classDoc.term + "\n";
+			header += "teachers: ";
+			for(var i = 0; i < classDoc.teachers.length; i ++)
+			{
+				header += "(" + classDoc.teachers[i].username + " - " + classDoc.teachers[i].firstname + "," + classDoc.teachers[i].surname + ")";
+				if( i < classDoc.teachers.length - 1) header += ",";
+			}
+			header += "\n";
+			if(classDoc.module != undefined)
+			{
+				header += "module: " + classDoc.module.code + " - " + classDoc.module.title + "\n";
+			}
+			else if(classDoc.modules.length > 0)
+			{
+				header += "modules: ";
+				for(var i = 0; i < classDoc.modules.length; i ++)
+				{
+					header += "(" + classDoc.module.code + " - " + classDoc.module.title + ")"
+					if( i < classDoc.modules.length - 1) header += ",";
+				}
+			}
+			header += "\n";
+
+			fileString += header;
+
+			return registers.find({class_id: ObjectId(classDoc._id)});
+
+		})
+
+		.then((doc)=>{
+
+			//create a student list
+			var p = doc.map((register)=>{
+				return students.findOne(register.student_id,
+					{fields: {username: 1, firstname: 1, surname: 1}})
+					.then((doc)=>{
+						doc.attendance = register.attendance;
+						return Promise.resolve(doc);
+					})
+			})
+
+			return Promise.all(p);
+
+		})
+
+		.then((doc)=>{
+			//sort the results by surname
+			doc.sort(function(a,b){
+				return (a.surname < b.surname)? -1 : 1;
+			})
+
+			//TODO finish this !
+			console.log(doc);
+			var body = "surname, firstname, username, ";
+			for(var j = 0; j < classDoc.sessionarray.length; j++ )
+			{
+				body += "session " + (j+1) + " - " + classDoc.sessionarray[j];
+			}
+
+			for(var i = 0; i < doc.length; i++)
+			{
+				body += doc[i].surname + ", " + doc[i].firstname + ", " + doc[i].username + ", ";
+				for(var j = 0; j < classDoc.sessionarray.length; j++ )
+				{
+
+				}
+
+			}
+		})
+
+		.catch((err)=>
+		{
+			console.log(err);
+			res.status(400).send(err);
+		})
+
+	})
+
 
 
 	//////////////////////////////STUDENT METHODS/////////////////////////

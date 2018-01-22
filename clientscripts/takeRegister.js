@@ -199,6 +199,12 @@ $(document).ready(function()
 		})
 	})
 
+	$('#download').on("click", function(e){
+		$.get("/classregisterfile",{
+			class: classDoc._id
+		})
+	})
+
 
 
 	$(document).on("click",".attendance",function(e){
