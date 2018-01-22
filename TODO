@@ -1,13 +1,9 @@
 
-7. extras for register page
-	- warnings for stupid actions
-	- hover over for stats
-	- reset register button
-
-8. video + link
+8. video + link on teacher/admin menu
 
 For later ...
 
+- reset register button
 - Deal with wrong class registration (student side)
 - Deal with opening register when students are open for another class
 - Dealing with name discrepancies.
