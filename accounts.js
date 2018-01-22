@@ -171,7 +171,7 @@ function Accounts(app)
 									console.error(error);
 								}
 
-								console.log('Message sent: %s', info.messageId);
+								//console.log('Message sent: %s', info.messageId);
 								// Preview only available when sending through an Ethereal account
 								console.log(mail.html);
 
