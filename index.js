@@ -39,6 +39,7 @@ app.use(expressSession({
 	store: global.sessionstore,
 	cookie: { maxAge: 60000 * 60 * 12}, // 12 hrs
 	saveUninitialized: false
+	//flag for secure needs to be set here
 }));
 
 
