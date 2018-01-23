@@ -20,7 +20,8 @@ $(document).ready(function(){
 		var department = $('#departmentInput').val();
 		$.get(server_url +"/modulelist", {department: department}, function(res)
 		{
-			$('#moduleInput').empty();
+			$('#moduleInputSingle').empty();
+			$('#moduleInputMultiple').empty();
 			moduleList = res;
 			for(var i = 0; i < res.length; i++)
 			{
