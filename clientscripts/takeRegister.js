@@ -349,6 +349,12 @@ $(document).ready(function()
 			row.append(cell);
 		}
 		$('#registerHeader').append(row);
+
+		var c = "session_" + (Number(classDoc.currentsession) + 1);
+		if(classDoc.classpass != null)
+		{
+			$('th.'+c).addClass("success");
+		}
 	}
 
 	function updateRegister()
