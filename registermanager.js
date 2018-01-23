@@ -125,7 +125,7 @@ function RegisterManager(app)
 					if(doc.session_id)
 					{
 						global.sessionstore.destroy(doc.session_id,function(error){
-							console.log(error)
+							//console.log(error)
 						});
 					}
 
@@ -212,7 +212,7 @@ function RegisterManager(app)
 				if(item.session_id)
 				{
 					global.sessionstore.destroy(item.session_id,function(error){
-						console.log(error)
+						//console.log(error)
 					});
 					students.update(item._id, {$set: {session_id: null, currentclass: null}});
 				}
@@ -441,12 +441,12 @@ function RegisterManager(app)
 						{
 							if(error)
 							{
-								console.log(error);
+								//console.log(error);
 							}
 							else
 							{
-								console.log(info);
-								console.log(mail);
+								//console.log(info);
+								//console.log(mail);
 							}
 
 						});
@@ -501,7 +501,6 @@ function RegisterManager(app)
 
 		.then((doc)=>
 		{
-			console.log(doc);
 			classDoc = doc;
 			//create the header
 			var header = "Registermate Download\n";
@@ -597,7 +596,6 @@ function RegisterManager(app)
 			}
 
 			fileString += body;
-			console.log(fileString);
 			res.send(fileString);
 		})
 

@@ -103,7 +103,7 @@ function ClassManager(app)
 							if(item.session_id)
 							{
 								global.sessionstore.destroy(item.session_id,function(error){
-									console.log(error)
+									//console.log(error)
 								});
 								students.update(item._id, {$set: {session_id: null, currentclass: null}});
 							}
