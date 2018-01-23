@@ -34,10 +34,10 @@ global.sessionstore.on('error', function(error) {
 
 app.set('trust proxy', 1) // trust first proxy
 app.use(expressSession({
-	secret: 'keyboard cat',
+	secret: 'fubalubalumpadump',
 	resave: false,
 	store: global.sessionstore,
-	cookie: { maxAge: 60000 },
+	cookie: { maxAge: 60000 * 60 * 12}, // 12 hrs
 	saveUninitialized: false
 }));
 
