@@ -13,7 +13,7 @@ const classManager = require('./classmanager.js');
 const registerManager = require('./registermanager.js');
 const argv = require('yargs').argv;
 
-const PORT = 8000;
+const PORT = 80;
 global.URL = "http://rm.doc.gold.ac.uk"
 //global.URL = "";
 
