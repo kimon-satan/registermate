@@ -128,6 +128,11 @@ function Accounts(app)
 						res.status(400).send(data.info);
 					}
 				})
+
+				.catch((e)=>
+				{
+					res.status(400).send(e);
+				});
 			}
 		}
 	)

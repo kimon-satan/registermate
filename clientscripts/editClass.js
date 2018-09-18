@@ -196,7 +196,7 @@ $(document).ready(function(){
 		{
 			//remove whitespace
 			var l = lines[i].replace(/[\s\t]/g, '');
-			var r = /^([a-z\-\'\.\s]*),([a-z\-\'\.\s]*),([a-z]{2,7}\d{0,4}[a-z]{0,3})$/gi;
+			var r = /^([a-z\-\'\.\s]*)\,([a-z\-\'\.\s]*)\,([a-z]{2,7}\d{0,4}[a-z]{0,3})$/gi;
 			if(l.length == 0)continue;
 			var res = r.exec(l);
 			if(res != null)

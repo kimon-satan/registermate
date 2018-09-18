@@ -26,7 +26,8 @@ exports.authenticateUser = function(ud,db,requireAdmin)
 			{
 				if(doc != null)
 				{
-					pwhasher(ud.password).verifyAgainst(doc.hash, function(error, verified){
+					pwhasher(ud.password).verifyAgainst(doc.hash, function(error, verified)
+					{
 
 						if(verified)
 						{
@@ -56,7 +57,7 @@ exports.authenticateUser = function(ud,db,requireAdmin)
 						{
 							if(doc == null)
 							{
-								resolve({valid: true, info: "First user", _id: doc._id});
+								resolve({valid: false, info:"Database is empty"});
 							}
 							else
 							{
