@@ -363,7 +363,7 @@ function ClassManager(app)
 			password: req.session.password
 		}
 
-		helpers.authenticateForClass(auth, req.query._id)
+		helpers.authenticateForClass(auth, req.body.class)
 
 		.then((data)=>{
 			//find the teacher
