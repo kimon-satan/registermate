@@ -28,7 +28,12 @@ $(document).ready(function()
 	{
 
 		var _id = $("#classInput").val();
-		if(_id == "none")classDoc = undefined;
+		if(_id == "none")
+		{
+			alert("'none' is not a valid class");
+			$("#classInput").val(classDoc._id);
+			return;
+		}
 		var req = $.get(server_url +"/classdoc",{_id: _id} ,function(res){
 			classDoc = res;
 			//updateStudents();
