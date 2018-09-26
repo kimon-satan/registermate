@@ -60,12 +60,15 @@ function RegisterManager(app)
 
 	app.post('/changecurrentsession', (req,res) =>
 	{
+
+		console.log(req.body);
+
 		var auth = {
 			username: req.session.username,
 			password: req.session.password
 		}
 
-		helpers.authenticateForClass(auth, req.query._id)
+		helpers.authenticateForClass(auth, req.body.class)
 
 		.then(()=>{
 			return classes.update(req.body.class, {$set: {currentsession: req.body.currentsession}});
@@ -92,7 +95,9 @@ function RegisterManager(app)
 			password: req.session.password
 		}
 
-		helpers.authenticateForClass(auth, req.query._id)
+		console.log(req.body, auth);
+
+		helpers.authenticateForClass(auth, req.body.class)
 
 		.then((doc)=>{
 			return classes.findOne(req.body.class);
@@ -164,7 +169,7 @@ function RegisterManager(app)
 
 		var classDoc;
 
-		helpers.authenticateForClass(auth, req.query._id)
+		helpers.authenticateForClass(auth, req.body.class)
 
 		.then((doc)=>
 		{
@@ -246,7 +251,7 @@ function RegisterManager(app)
 
 		var classDoc;
 
-		helpers.authenticateForClass(auth, req.query._id)
+		helpers.authenticateForClass(auth, req.body.class)
 
 		.then((doc) => {
 			//find the student
