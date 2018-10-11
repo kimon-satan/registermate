@@ -572,7 +572,7 @@ function RegisterManager(app)
 				if(classDoc.sessionarray[j] != "U")
 				{
 					var d = new Date(Number(classDoc.sessionarray[j]));
-					body += "session " + (j+1) + " - " + d.getDate() + "/" + d.getMonth() + 1 + "/" + d.getFullYear();
+					body += "session " + (j+1) + " - " + d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear();
 				}
 				else
 				{
