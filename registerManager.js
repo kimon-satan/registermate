@@ -562,7 +562,7 @@ function RegisterManager(app)
 			})
 
 
-			var body = "surname, firstname, username, ";
+			var body = "username, name, ";
 			for(var j = 0; j < classDoc.sessionarray.length; j++ )
 			{
 				if(classDoc.sessionarray[j] != "U")
@@ -586,7 +586,7 @@ function RegisterManager(app)
 
 			for(var i = 0; i < doc.length; i++)
 			{
-				body += doc[i].surname + ", " + doc[i].firstname + ", " + doc[i].username + ", ";
+				body += doc[i].username + "," +  doc[i].firstname + " "  + doc[i].surname + ", ";
 				for(var j = 0; j < doc[i].attendance.length; j++ )
 				{
 					body += doc[i].attendance[j];
