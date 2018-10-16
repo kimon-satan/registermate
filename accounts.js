@@ -62,6 +62,7 @@ function Accounts(app)
 			//first user becomes an admin automatically
 			if(doc == 0)
 			{
+				console.log("admin")
 				ud.role = "admin";
 			}
 
