@@ -13,9 +13,11 @@ const classManager = require('./classmanager.js');
 const registerManager = require('./registermanager.js');
 const argv = require('yargs').argv;
 
+//const PORT = 80;
 const PORT = 8000;
-//global.URL = "http://doc.gold.ac.uk/usr/215"
-global.URL = "";
+//global.URL = "http://www.doc.gold.ac.uk/www/275"
+//global.URL = "http://rm.doc.gold.ac.uk";
+global.URL = "http://localhost:8000"
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -34,11 +36,12 @@ global.sessionstore.on('error', function(error) {
 
 app.set('trust proxy', 1) // trust first proxy
 app.use(expressSession({
-	secret: 'keyboard cat',
+	secret: 'fubalubalumpadump',
 	resave: false,
 	store: global.sessionstore,
-	cookie: { maxAge: 60000 },
+	cookie: { maxAge: 60000 * 60 * 12}, // 12 hrs
 	saveUninitialized: false
+	//flag for secure needs to be set here
 }));
 
 
@@ -54,27 +57,13 @@ hbs.registerPartials(__dirname + '/templates');
 
 app.transporter = "";
 
-nodemailer.createTestAccount((err, account) => {
-
-	if(err)
-	{
-		console.log(err);
-		return Promise.reject();
-	}
-	else
-	{
 		// init reusable transporter object using the default SMTP transport
-		app.transporter = nodemailer.createTransport({
-				host: 'smtp.ethereal.email',
-				port: 587,
-				secure: false, // true for 465, false for other ports
-				auth: {
-						user: account.user, // generated ethereal user
-						pass: account.pass  // generated ethereal password
-				}
-		});
-	}
-})
+app.transporter = nodemailer.createTransport({
+	host: 'igor.gold.ac.uk', //we should now be able to email igor accounts
+	port: 25,
+	secure: false, // true for 465, false for other ports
+    	tls: {rejectUnauthorized: false}
+});
 
 app.use("/libs",express.static(__dirname + '/libs'));
 app.use("/clientscripts",express.static(__dirname + '/clientscripts'));

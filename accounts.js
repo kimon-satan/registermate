@@ -129,6 +129,11 @@ function Accounts(app)
 						res.status(400).send(data.info);
 					}
 				})
+
+				.catch((e)=>
+				{
+					res.status(400).send(e);
+				});
 			}
 		}
 	)
@@ -196,9 +201,9 @@ function Accounts(app)
 									console.error(error);
 								}
 
-								console.log('Message sent: %s', info.messageId);
+								//console.log('Message sent: %s', info.messageId);
 								// Preview only available when sending through an Ethereal account
-								console.log(mail.html);
+								//console.log(mail.html);
 
 								res.send("An email has been sent to your registered address.");
 							});
@@ -215,7 +220,7 @@ function Accounts(app)
 			}
 		})
 		.catch((doc) => {
-			console.log(doc);
+			//console.log(doc);
 			res.send(doc)
 		})
 
@@ -262,11 +267,11 @@ function Accounts(app)
 			return users.update({username: username},{$set: {hash: data, token: ""}})
 		})
 		.then((data)=>{
-			console.log("success");
+			//console.log("success");
 			res.send("Your password has been succesfully updated.");
 		})
 		.catch((doc) =>{
-			console.log("fail", doc);
+			//console.log("fail", doc);
 			res.status(400).send(doc);
 		})
 	})
