@@ -60,12 +60,15 @@ function RegisterManager(app)
 
 	app.post('/changecurrentsession', (req,res) =>
 	{
+
+		console.log(req.body);
+
 		var auth = {
 			username: req.session.username,
 			password: req.session.password
 		}
 
-		helpers.authenticateForClass(auth, req.query._id)
+		helpers.authenticateForClass(auth, req.body.class)
 
 		.then(()=>{
 			return classes.update(req.body.class, {$set: {currentsession: req.body.currentsession}});
@@ -92,7 +95,9 @@ function RegisterManager(app)
 			password: req.session.password
 		}
 
-		helpers.authenticateForClass(auth, req.query._id)
+		console.log(req.body, auth);
+
+		helpers.authenticateForClass(auth, req.body.class)
 
 		.then((doc)=>{
 			return classes.findOne(req.body.class);
@@ -125,7 +130,7 @@ function RegisterManager(app)
 					if(doc.session_id)
 					{
 						global.sessionstore.destroy(doc.session_id,function(error){
-							console.log(error)
+							//console.log(error)
 						});
 					}
 
@@ -164,7 +169,7 @@ function RegisterManager(app)
 
 		var classDoc;
 
-		helpers.authenticateForClass(auth, req.query._id)
+		helpers.authenticateForClass(auth, req.body.class)
 
 		.then((doc)=>
 		{
@@ -212,7 +217,7 @@ function RegisterManager(app)
 				if(item.session_id)
 				{
 					global.sessionstore.destroy(item.session_id,function(error){
-						console.log(error)
+						//console.log(error)
 					});
 					students.update(item._id, {$set: {session_id: null, currentclass: null}});
 				}
@@ -246,7 +251,7 @@ function RegisterManager(app)
 
 		var classDoc;
 
-		helpers.authenticateForClass(auth, req.query._id)
+		helpers.authenticateForClass(auth, req.body.class)
 
 		.then((doc) => {
 			//find the student
@@ -441,12 +446,12 @@ function RegisterManager(app)
 						{
 							if(error)
 							{
-								console.log(error);
+								//console.log(error);
 							}
 							else
 							{
-								console.log(info);
-								console.log(mail);
+								//console.log(info);
+								//console.log(mail);
 							}
 
 						});
@@ -501,7 +506,6 @@ function RegisterManager(app)
 
 		.then((doc)=>
 		{
-			console.log(doc);
 			classDoc = doc;
 			//create the header
 			var header = "Registermate Download\n";
@@ -562,13 +566,13 @@ function RegisterManager(app)
 			})
 
 
-			var body = "surname, firstname, username, ";
+			var body = "username, name, ";
 			for(var j = 0; j < classDoc.sessionarray.length; j++ )
 			{
 				if(classDoc.sessionarray[j] != "U")
 				{
 					var d = new Date(Number(classDoc.sessionarray[j]));
-					body += "session " + (j+1) + " - " + d.getDate() + "/" + d.getMonth() + 1 + "/" + d.getFullYear();
+					body += "session " + (j+1) + " - " + d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear();
 				}
 				else
 				{
@@ -586,7 +590,7 @@ function RegisterManager(app)
 
 			for(var i = 0; i < doc.length; i++)
 			{
-				body += doc[i].surname + ", " + doc[i].firstname + ", " + doc[i].username + ", ";
+				body += doc[i].username + "," +  doc[i].firstname + " "  + doc[i].surname + ", ";
 				for(var j = 0; j < doc[i].attendance.length; j++ )
 				{
 					body += doc[i].attendance[j];
@@ -597,7 +601,6 @@ function RegisterManager(app)
 			}
 
 			fileString += body;
-			console.log(fileString);
 			res.send(fileString);
 		})
 
@@ -629,7 +632,7 @@ function RegisterManager(app)
 			{
 				return Promise.reject("I can't find a student with that login");
 			}
-			else if(doc.currentclass == null)
+			else if(doc.currentclass == null || doc.currentclass == undefined)
 			{
 				return Promise.reject("You currently aren't required to register for any classes");
 			}

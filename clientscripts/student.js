@@ -4,7 +4,7 @@ $(document).ready(function()
 	{
 		e.preventDefault();
 		var un = $('#username').val().trim().toLowerCase();
-		var r = /[a-z]{3,6}\d{3,4}/gi;
+		var r = /([a-z]{2,7}\d{0,4}[a-z]{0,3})/gi;
 
 		if(r.test(un))
 		{

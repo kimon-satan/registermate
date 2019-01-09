@@ -28,7 +28,12 @@ $(document).ready(function()
 	{
 
 		var _id = $("#classInput").val();
-		if(_id == "none")classDoc = undefined;
+		if(_id == "none")
+		{
+			alert("'none' is not a valid class");
+			$("#classInput").val(classDoc._id);
+			return;
+		}
 		var req = $.get(server_url +"/classdoc",{_id: _id} ,function(res){
 			classDoc = res;
 			//updateStudents();
@@ -260,8 +265,8 @@ $(document).ready(function()
 
 		var m = Date.now() - classDoc.sessionarray[classDoc.currentsession];
 		var d = new Date(m);
-		var t = [ d.getHours().toString(), d.getMinutes().toString(), d.getSeconds().toString()];
-
+		var t = [ String(Math.floor(m/(1000 * 60 * 60))), d.getMinutes().toString(), d.getSeconds().toString()];
+		console.log(m,t);
 		if(d.getSeconds()%30 == 0)
 		{
 			$.get(server_url +"/classdoc",{_id: classDoc._id} ,function(res)

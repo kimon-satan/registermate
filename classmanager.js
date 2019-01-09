@@ -103,7 +103,7 @@ function ClassManager(app)
 							if(item.session_id)
 							{
 								global.sessionstore.destroy(item.session_id,function(error){
-									console.log(error)
+									//console.log(error)
 								});
 								students.update(item._id, {$set: {session_id: null, currentclass: null}});
 							}
@@ -363,7 +363,7 @@ function ClassManager(app)
 			password: req.session.password
 		}
 
-		helpers.authenticateForClass(auth, req.query._id)
+		helpers.authenticateForClass(auth, req.body.class)
 
 		.then((data)=>{
 			//find the teacher
