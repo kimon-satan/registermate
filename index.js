@@ -13,11 +13,11 @@ const classManager = require('./classmanager.js');
 const registerManager = require('./registermanager.js');
 const argv = require('yargs').argv;
 
-const PORT = 80;
-//const PORT = 8000;
+//const PORT = 80;
+const PORT = 8000;
 //global.URL = "http://www.doc.gold.ac.uk/www/275"
-global.URL = "http://rm.doc.gold.ac.uk";
-//global.URL = "http://localhost:8000"
+//global.URL = "http://rm.doc.gold.ac.uk";
+global.URL = "http://localhost:8000"
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -89,10 +89,6 @@ if(argv.generateUsers)
 app.get('/', (req, res) => res.redirect(URL + '/student/'))
 app.get('/student', (req, res) =>
 {
-
-	console.log(req.ip);
-	console.log(req.ips);
-	console.log(req.connection.remoteAddr);
 
 	if(req.session.studentname == null)
 	{

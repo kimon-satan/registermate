@@ -628,9 +628,6 @@ function ClassManager(app)
 				existingstudents = docs;
 				var num = 0;
 
-				console.log(importstudents);
-				console.log(existingstudents);
-
 				for(var i = 0; i < importstudents.length; i++)
 				{
 					var exists = false;

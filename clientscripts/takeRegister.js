@@ -53,6 +53,7 @@ $(document).ready(function()
 
 			$('#sessionInput').val(classDoc.currentsession);
 			$('#lateTime').val(classDoc.latetime);
+			$('#ipblock').prop('checked',classDoc.ipblock == "true");
 
 
 
@@ -163,12 +164,27 @@ $(document).ready(function()
 		}
 	})
 
+
+
 	$("#lateTime").on("change", function(e)
 	{
 		if(classDoc != undefined || classDoc != "none")
 		{
 			classDoc.latetime = $('#' + e.target.id).val();
 			$.post(server_url + '/setclassparameter', {class: classDoc._id, latetime: classDoc.latetime});
+		}
+		else
+		{
+			alert("select a class first")
+		}
+	})
+
+	$("#ipblock").on("change", function(e)
+	{
+		if(classDoc != undefined || classDoc != "none")
+		{
+			classDoc.ipblock = $('#' + e.target.id).prop('checked');
+			$.post(server_url + '/setclassparameter', {class: classDoc._id, ipblock: classDoc.ipblock});
 		}
 		else
 		{

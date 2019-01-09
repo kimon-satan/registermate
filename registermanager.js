@@ -692,6 +692,8 @@ function RegisterManager(app)
 		var classDoc;
 		var isLate = false;
 
+		var ip = req.ip;
+
 		if(req.session.studentname != undefined)
 		{
 			res.status(400).send("You've already registered");
@@ -709,6 +711,12 @@ function RegisterManager(app)
 		.then((doc)=>{
 
 			classDoc = doc;
+
+			if(classDoc.ipblock)
+			{
+				console.log(ip);
+				//TODO ip blocking here
+			}
 
 			if(doc == null)
 			{
