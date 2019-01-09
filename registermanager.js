@@ -9,6 +9,7 @@ const students = db.get('students');
 const registers = db.get('registers');
 
 
+
 //Classes DB
 /*
 {
@@ -627,12 +628,15 @@ function RegisterManager(app)
 
 		students.findOne({username: req.query.username})
 
+		//TODO implement currentclasses as an array
+
 		.then((doc)=>{
+
 			if(doc == null)
 			{
 				return Promise.reject("I can't find a student with that login");
 			}
-			else if(doc.currentclass == null || doc.currentclass == undefined)
+			else if(doc.currentclass == null || doc.currentclass == undefined || doc.currentclass == '')
 			{
 				return Promise.reject("You currently aren't required to register for any classes");
 			}

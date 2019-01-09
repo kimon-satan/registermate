@@ -1,6 +1,10 @@
-$(document).ready(function(){
+//$(document).ready(function(){
 
 	var classDoc;
+	var importDoc;
+
+
+
 	//Load the user's classes
 	var req = $.get(server_url + "/userclasses", function(res){
 		console.log(res)
@@ -16,6 +20,24 @@ $(document).ready(function(){
 	req.fail(function(err){
 		alert(err);
 	});
+
+
+	if(class_id != undefined && class_id != "")
+	{
+		var _id = class_id;
+		if(_id == "none")classDoc = undefined;
+		var req = $.get(server_url +"/classdoc",{_id: _id} ,function(res){
+			classDoc = res;
+			updateTeachers();
+			updateStudents();
+			$('#numSessionsInput').val(classDoc.sessionarray.length);
+		})
+		req.fail(function(err){
+			alert(err);
+		});
+	}
+
+
 
 	//load department list
 	$.get(server_url +"/departmentlist",function(res)
@@ -57,6 +79,20 @@ $(document).ready(function(){
 			updateTeachers();
 			updateStudents();
 			$('#numSessionsInput').val(classDoc.sessionarray.length);
+		})
+		req.fail(function(err){
+			alert(err);
+		});
+
+	});
+
+	$("#importInput").on("change", function(e)
+	{
+
+		var _id = $("#importInput").val();
+		if(_id == "none")importDoc = undefined;
+		var req = $.get(server_url +"/classdoc",{_id: _id} ,function(res){
+			importDoc = res;
 		})
 		req.fail(function(err){
 			alert(err);
@@ -145,6 +181,38 @@ $(document).ready(function(){
 			{
 				$.post(server_url +"/removeclass", {class: classDoc._id}, function(res){
 					window.location = server_url + "/teacher";
+				})
+			}
+		}
+	})
+
+	$('#importClass').on("click", function(e)
+	{
+		if(classDoc == undefined)
+		{
+			alert("choose a class to edit first");
+			return;
+		}
+		else if(importDoc == undefined)
+		{
+			alert("choose a class to import first");
+			return;
+		}
+		else if (classDoc._id == importDoc._id)
+		{
+			alert("this is already the class that you are editing");
+			return;
+		}
+		else
+		{
+			var str = "Are you sure you want to import students from " + importDoc.classname + " into " + classDoc.classname;
+			var c = confirm(str);
+			if(c)
+			{
+				$.post(server_url +"/importclass", {class: classDoc._id, importclass: importDoc._id}, function(res)
+				{
+					alert(res);
+					updateStudents();
 				})
 			}
 		}
@@ -259,4 +327,4 @@ $(document).ready(function(){
 		})
 	}
 
-});
+//});

@@ -589,6 +589,88 @@ function ClassManager(app)
 
 	})
 
+	app.post('/importclass', (req,res) =>
+	{
+		var auth = {
+			username: req.session.username,
+			password: req.session.password
+		}
+
+
+
+		helpers.authenticateForClass(auth, req.body.class)
+
+		.then((doc)=>
+		{
+			var importstudents = [];
+			var existingstudents = [];
+			var classDoc;
+			var attendanceArray = [];
+
+			classes.findOne(req.body.class).then((doc)=>
+			{
+				classDoc = doc;
+				for(var i = 0; i < classDoc.sessionarray.length; i++)
+				{
+					attendanceArray.push("U");
+				}
+				return registers.find({class_id: ObjectId(req.body.importclass)})
+			})
+
+			.then((docs)=>
+			{
+				importstudents = docs;
+				return registers.find({class_id: ObjectId(req.body.class)})
+			})
+
+			.then((docs)=>
+			{
+				existingstudents = docs;
+				var num = 0;
+
+				console.log(importstudents);
+				console.log(existingstudents);
+
+				for(var i = 0; i < importstudents.length; i++)
+				{
+					var exists = false;
+					for(var j = 0; j < existingstudents.length; j++)
+					{
+						if(String(existingstudents[j].student_id) == String(importstudents[i].student_id))
+						{
+							exists = true;
+							break;
+						}
+
+					}
+
+					if(!exists)
+					{
+						num++;
+						var regObject = {student_id: importstudents[i].student_id, class_id: ObjectId(req.body.class), attendance: attendanceArray};
+						registers.insert(regObject);
+					}
+				}
+
+				return Promise.resolve(num);
+			})
+
+			.then((doc)=>{
+
+				res.send(doc + " students were imported.")
+
+			})
+
+		})
+
+
+		.catch((err)=>{
+			res.status(400).send(err);
+		})
+
+	})
+
+
 	app.get('/classstudents', (req,res) =>
 	{
 		var auth = {
