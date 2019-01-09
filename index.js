@@ -89,6 +89,11 @@ if(argv.generateUsers)
 app.get('/', (req, res) => res.redirect(URL + '/student/'))
 app.get('/student', (req, res) =>
 {
+
+	console.log(req.ip);
+	console.log(req.ips);
+	console.log(req.connection.remoteAddr);
+
 	if(req.session.studentname == null)
 	{
 		res.render(__dirname + '/templates/student.hbs', {SERVER_URL: URL})
@@ -137,7 +142,15 @@ app.get('/editclass' , (req, res) => {
 
 	if (req.session.username != null && req.session.password != null)
 	{
-		res.render(__dirname + '/templates/editClass.hbs', {SERVER_URL: URL});
+		if(req.query._id)
+		{
+			res.render(__dirname + '/templates/editClass.hbs', {SERVER_URL: URL, CLASS_ID: req.query._id});
+		}
+		else
+		{
+			res.render(__dirname + '/templates/editClass.hbs', {SERVER_URL: URL});
+		}
+
 	}
 	else
 	{

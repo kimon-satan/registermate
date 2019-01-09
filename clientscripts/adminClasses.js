@@ -8,22 +8,16 @@ $(document).ready(function()
 		updateTable({idx: counter, items: 50});
 	})
 
-	$(document).on("click",'.remove', function(e)
+	$(document).on("click",'.edit', function(e)
 	{
 
 		var _id = e.target.parentElement.parentElement.id;
-		var un = $('#' + _id +' > .classname').text();
-		var c = confirm("Are you sure you want to remove " + un + " ?");
-		if(c)
+
+		$.get(server_url + "/editclass", {_id: _id}, function(res)
 		{
-			$.post(server_url + "/removeclass", {class: _id}, function(res)
-			{
-				$('#' + _id).remove();
-			})
-			.fail(function(res){
-				alert(res.responseText);
-			})
-		}
+			document.write(res);
+		});
+
 	})
 
 
@@ -89,7 +83,7 @@ function updateTable(filter)
 
 
 			var col = $("<td></td>");
-			col.append("<button class='btn btn-danger btn-xs hspaced remove'>remove class</button>");
+			col.append("<button class='btn btn-danger btn-xs hspaced edit'>edit class</button>");
 
 			row.append(col);
 			$('#usertable').append(row);
