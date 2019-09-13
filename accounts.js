@@ -104,7 +104,7 @@ function Accounts(app)
 
 	app.post('/login', (req, res) =>
 		{
-			if(req.session.username != null && req.session.password != null)
+			if(req.session.username != null)
 			{
 				res.redirect(URL + "/teacher")
 			}
@@ -118,7 +118,7 @@ function Accounts(app)
 					if(data.valid)
 					{
 						req.session.username = req.body.username;
-						req.session.password = req.body.password;
+						req.session.password = req.body.password; // TODO remove this - requires changing authenticateUser
 						req.session.role = data.role;
 						req.session._id = data._id;
 						req.session.cookie.maxAge = 60000 * 60 * 6; //6 hrs

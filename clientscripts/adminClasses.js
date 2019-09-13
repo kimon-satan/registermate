@@ -8,6 +8,19 @@ $(document).ready(function()
 		updateTable({idx: counter, items: 50});
 	})
 
+	$('#resetall').on("click", function(e)
+	{
+		var b = window.confirm("This operation will delete all classes and students. Are you sure you want to do this ?");
+
+		if(b)
+		{
+			$.post(server_url + "/resetall",function(res)
+			{
+				alert(res);
+			});
+		}
+	})
+
 	$(document).on("click",'.edit', function(e)
 	{
 

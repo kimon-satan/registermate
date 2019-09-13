@@ -15,9 +15,21 @@ const argv = require('yargs').argv;
 
 //const PORT = 80;
 const PORT = 8000;
+
+if(argv.local)
+{
+	global.URL = "http://localhost:8000"
+}
+else
+{
+	global.URL = "http://rm.doc.gold.ac.uk";
+}
+
 //global.URL = "http://www.doc.gold.ac.uk/www/275"
-//global.URL = "http://rm.doc.gold.ac.uk";
-global.URL = "http://localhost:8000"
+
+
+
+
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

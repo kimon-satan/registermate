@@ -589,6 +589,41 @@ function ClassManager(app)
 
 	})
 
+	app.post('/resetall', (req,res) =>
+	{
+		var auth = {
+			username: req.session.username,
+			password: req.session.password
+		}
+
+		helpers.authenticateForClass(auth, req.body.class)
+
+		.then((doc)=>
+		{
+			//remove any registers
+			return registers.remove({})
+
+			.then(_=>{
+				return students.remove({});
+			})
+
+			.then(_=>{
+				return classes.remove({});
+			})
+
+		})
+
+		.then((doc)=>
+		{
+			res.send("all classes and students removed");
+		})
+
+		.catch((err)=>{
+			res.status(400).send(err);
+		})
+
+	})
+
 	app.post('/importclass', (req,res) =>
 	{
 		var auth = {

@@ -452,7 +452,7 @@ function RegisterManager(app)
 							else
 							{
 								//console.log(info);
-								//console.log(mail);
+								console.log(mail);
 							}
 
 						});
