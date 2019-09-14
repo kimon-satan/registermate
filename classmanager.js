@@ -121,7 +121,7 @@ function ClassManager(app)
 
 	app.get('/adminclasses', (req ,res) => {
 
-		helpers.authenticateUser(req.session, users, true)
+		helpers.verifyUser(req.session, users, true)
 
 		.then((data) =>{
 
@@ -173,7 +173,7 @@ function ClassManager(app)
 		//get a class document
 		var auth = {
 			username: req.session.username,
-			password: req.session.password
+			token: req.session.token
 		}
 
 		var role;
@@ -199,12 +199,12 @@ function ClassManager(app)
 		var auth =
 		{
 			username: req.session.username,
-			password: req.session.password
+			token: req.session.token
 		};
 
 		var teacherDoc;
 
-		helpers.authenticateUser(auth, users, false)
+		helpers.verifyUser(auth, users, false)
 
 		.then((data)=>{
 
@@ -260,6 +260,7 @@ function ClassManager(app)
 		})
 
 		.catch((err)=>{
+			console.log("error");
 			res.status(400).send(err);
 		})
 
@@ -271,10 +272,10 @@ function ClassManager(app)
 		//we actually need to do this before removing users
 		var auth = {
 			username: req.session.username,
-			password: req.session.password
+			token: req.session.token
 		}
 
-		helpers.authenticateUser(auth, users, false)
+		helpers.verifyUser(auth, users, false)
 
 		.then(function(data){
 
@@ -314,7 +315,7 @@ function ClassManager(app)
 		//get a class document
 		var auth = {
 			username: req.session.username,
-			password: req.session.password
+			token: req.session.token
 		}
 
 		helpers.authenticateForClass(auth, req.body.class)
@@ -360,7 +361,7 @@ function ClassManager(app)
 		//get a class document
 		var auth = {
 			username: req.session.username,
-			password: req.session.password
+			token: req.session.token
 		}
 
 		helpers.authenticateForClass(auth, req.body.class)
@@ -415,7 +416,7 @@ function ClassManager(app)
 
 		var auth = {
 			username: req.session.username,
-			password: req.session.password
+			token: req.session.token
 		}
 
 		helpers.authenticateForClass(auth, req.body.class)
@@ -534,7 +535,7 @@ function ClassManager(app)
 	{
 		var auth = {
 			username: req.session.username,
-			password: req.session.password
+			token: req.session.token
 		}
 
 		var studentList = [];
@@ -561,7 +562,7 @@ function ClassManager(app)
 	{
 		var auth = {
 			username: req.session.username,
-			password: req.session.password
+			token: req.session.token
 		}
 
 		var studentList = [];
@@ -593,24 +594,27 @@ function ClassManager(app)
 	{
 		var auth = {
 			username: req.session.username,
-			password: req.session.password
+			token: req.session.token
 		}
 
-		helpers.authenticateForClass(auth, req.body.class)
+		helpers.verifyUser(auth, users, true)
 
 		.then((doc)=>
 		{
 			//remove any registers
 			return registers.remove({})
+		})
 
-			.then(_=>{
-				return students.remove({});
-			})
+		.then(_=>{
+			return students.remove({});
+		})
 
-			.then(_=>{
-				return classes.remove({});
-			})
+		.then(_=>{
+			return classes.remove({});
+		})
 
+		.then(_=>{
+			return users.update({},{$set: {classes:[]}},{multi: true});
 		})
 
 		.then((doc)=>
@@ -628,7 +632,7 @@ function ClassManager(app)
 	{
 		var auth = {
 			username: req.session.username,
-			password: req.session.password
+			token: req.session.token
 		}
 
 
@@ -707,7 +711,7 @@ function ClassManager(app)
 	{
 		var auth = {
 			username: req.session.username,
-			password: req.session.password
+			token: req.session.token
 		}
 
 		var studentList = [];
@@ -753,7 +757,7 @@ function ClassManager(app)
 	{
 		var auth = {
 			username: req.session.username,
-			password: req.session.password
+			token: req.session.token
 		}
 
 		var studentList = [];
@@ -827,7 +831,7 @@ function ClassManager(app)
 	app.get('/classdata', (req,res) =>
 	{
 
-		helpers.authenticateUser(req.session, users, true)
+		helpers.verifyUser(req.session, users, true)
 
 		.then((data) =>{
 

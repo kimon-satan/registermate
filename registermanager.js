@@ -25,7 +25,7 @@ function RegisterManager(app)
 
 	app.get('/adminstudents', (req ,res) => {
 
-		helpers.authenticateUser(req.session, users, true)
+		helpers.verifyUser(req.session, users, true)
 
 		.then((data) =>{
 
@@ -48,7 +48,7 @@ function RegisterManager(app)
 
 	app.get('/takeregister' , (req, res) => {
 
-		if (req.session.username != null && req.session.password != null)
+		if (req.session.username != null && req.session.token != null)
 		{
 			res.render(__dirname + '/templates/takeRegister.hbs', {SERVER_URL: URL});
 		}
@@ -66,7 +66,7 @@ function RegisterManager(app)
 
 		var auth = {
 			username: req.session.username,
-			password: req.session.password
+			token: req.session.token
 		}
 
 		helpers.authenticateForClass(auth, req.body.class)
@@ -93,7 +93,7 @@ function RegisterManager(app)
 	{
 		var auth = {
 			username: req.session.username,
-			password: req.session.password
+			token: req.session.token
 		}
 
 		console.log(req.body, auth);
@@ -106,10 +106,13 @@ function RegisterManager(app)
 
 		.then((doc)=>{
 
+			var ip = (global.isLocal) ? "192.168.100.100" : req.ip;
+
 			doc.sessionarray[doc.currentsession] = Date.now(); //timestamp the register
 			return classes.update(req.body.class,
 				{$set: {
 					classpass: req.body.classpass,
+					ip: ip,
 					sessionarray: doc.sessionarray,
 					marklate: false
 				}});
@@ -165,7 +168,7 @@ function RegisterManager(app)
 	{
 		var auth = {
 			username: req.session.username,
-			password: req.session.password
+			token: req.session.token
 		}
 
 		var classDoc;
@@ -247,7 +250,7 @@ function RegisterManager(app)
 
 		var auth = {
 			username: req.session.username,
-			password: req.session.password
+			token: req.session.token
 		}
 
 		var classDoc;
@@ -281,7 +284,7 @@ function RegisterManager(app)
 
 		var auth = {
 			username: req.session.username,
-			password: req.session.password
+			token: req.session.token
 		}
 
 		//create a new params object excluding class property
@@ -351,7 +354,7 @@ function RegisterManager(app)
 
 		var auth = {
 			username: req.session.username,
-			password: req.session.password
+			token: req.session.token
 		}
 
 		helpers.authenticateForClass(auth, req.body.class)
@@ -491,7 +494,7 @@ function RegisterManager(app)
 
 		var auth = {
 			username: req.session.username,
-			password: req.session.password
+			token: req.session.token
 		}
 
 		var classDoc;
@@ -692,7 +695,7 @@ function RegisterManager(app)
 		var classDoc;
 		var isLate = false;
 
-		var ip = req.ip;
+		var ip = (global.isLocal) ? "192.169.102.102" : req.ip;
 
 		if(req.session.studentname != undefined)
 		{
@@ -714,8 +717,19 @@ function RegisterManager(app)
 
 			if(classDoc.ipblock)
 			{
-				console.log(ip);
-				//TODO ip blocking here
+
+
+				var r = /(\d{3})\.(\d{3})\..*/;
+				var m = r.exec(ip);
+				r.lastIndex = 0;
+				var m2 = r.exec(doc.ip);
+
+				if(m[1] != m2[1] || m[2] != m2[2])
+				{
+					console.log("ip rejected: ", ip, doc.ip);
+					return Promise.reject("You are logging in from an invalid location. Consult your class teacher.");
+				}
+
 			}
 
 			if(doc == null)
@@ -802,7 +816,7 @@ function RegisterManager(app)
 	app.get('/studentdata', (req,res) =>
 	{
 
-		helpers.authenticateUser(req.session, users, true)
+		helpers.verifyUser(req.session, users, true)
 
 		.then((data) =>{
 
@@ -848,7 +862,7 @@ function RegisterManager(app)
 	app.post('/removestudent', (req,res) =>
 	{
 
-		helpers.authenticateUser(req.session, users, true)
+		helpers.verifyUser(req.session, users, true)
 
 		.then((data) =>{
 

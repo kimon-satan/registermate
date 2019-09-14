@@ -10,7 +10,7 @@ function Accounts(app)
 
 	app.get('/adminusers', (req ,res) => {
 
-		helpers.authenticateUser(req.session, users, true)
+		helpers.verifyUser(req.session, users, true)
 
 		.then((data) =>{
 
@@ -103,40 +103,45 @@ function Accounts(app)
 	})
 
 	app.post('/login', (req, res) =>
+	{
+
+		new Promise(function(resolve, reject)
 		{
-			if(req.session.username != null)
+			req.session.regenerate(function(err){
+				resolve();
+			})
+		})
+
+		.then(_=>{
+			return helpers.authenticateUser(req.body, users)
+		})
+			//check database
+
+		.then((data)=>
+		{
+			if(data.valid)
 			{
-				res.redirect(URL + "/teacher")
+				req.session.username = req.body.username;
+				//req.session.password = req.body.password; // TODO remove this - requires changing verifyUser
+				req.session.token = data.token;
+				req.session.role = data.role;
+				req.session._id = data._id;
+				req.session.cookie.maxAge = 60000 * 60 * 6; //6 hrs
+				res.redirect(URL + '/teacher');
 			}
 			else
 			{
-				//check database
-				helpers.authenticateUser(req.body, users, false)
+				res.status(400).send(data.info);
 
-				.then((data)=>{
-
-					if(data.valid)
-					{
-						req.session.username = req.body.username;
-						req.session.password = req.body.password; // TODO remove this - requires changing authenticateUser
-						req.session.role = data.role;
-						req.session._id = data._id;
-						req.session.cookie.maxAge = 60000 * 60 * 6; //6 hrs
-						res.redirect(URL + '/teacher');
-					}
-					else
-					{
-						res.status(400).send(data.info);
-					}
-				})
-
-				.catch((e)=>
-				{
-					res.status(400).send(e);
-				});
 			}
-		}
-	)
+		})
+
+		.catch((e)=>
+		{
+			res.status(400).send(e);
+		});
+
+	})
 
 	app.get('/logout', (req, res) =>
 	{
@@ -169,7 +174,7 @@ function Accounts(app)
 				var token = helpers.generateToken();
 				var d = new Date();
 				var expiretime = d.getTime() + 1000 * 60 * 30; //30 minutes from now
-				users.update({username: doc.username},{$set: {token: token, expiretime: expiretime}});
+				users.update({username: doc.username},{$set: {resettoken: token, expiretime: expiretime}});
 
 				res.render(__dirname + '/templates/resetMessage.hbs',
 				{ username: doc.username, site_url: URL, token: token },
@@ -210,7 +215,8 @@ function Accounts(app)
 						}
 						else
 						{
-							console.error("Nodemailer was not initialised. Here's what you would have sent..." + mail);
+							console.log("Nodemailer was not initialised. Here's what you would have sent..." );
+							console.log(mail);
 						}
 
 					}
@@ -230,16 +236,16 @@ function Accounts(app)
 		var token = req.params.token;
 		var username = req.params.username;
 		req.session.username = username;
-		req.session.token = token;
+		req.session.resettoken = token;
 		res.render(__dirname + '/templates/resetPassword.hbs', {SERVER_URL: URL});
 
 	})
 	app.post('/reset', (req, res) => {
 
-		var token = req.session.token;
+		var token = req.session.resettoken;
 		var username = req.session.username;
 
-		users.findOne({username: username, token: token})
+		users.findOne({username: username, resettoken: token})
 
 		.then((doc) =>
 		{
@@ -264,7 +270,7 @@ function Accounts(app)
 		.then((data)=>{
 			//update the password and destroy the token
 			req.session = null;
-			return users.update({username: username},{$set: {hash: data, token: ""}})
+			return users.update({username: username},{$set: {hash: data, resettoken: ""}})
 		})
 		.then((data)=>{
 			//console.log("success");
@@ -278,7 +284,7 @@ function Accounts(app)
 
 	app.get('/userdata', (req,res) =>{
 
-		helpers.authenticateUser(req.session, users, true)
+		helpers.verifyUser(req.session, users, true)
 
 		.then((data) =>{
 
@@ -326,10 +332,10 @@ function Accounts(app)
 
 		var auth = {
 			username: req.session.username,
-			password: req.session.password
+			token: req.session.token
 		}
 
-		helpers.authenticateUser(auth, users, true)
+		helpers.verifyUser(auth, users, true)
 
 		.then(function(data){
 
@@ -375,10 +381,10 @@ function Accounts(app)
 
 		var auth = {
 			username: req.session.username,
-			password: req.session.password
+			token: req.session.token
 		}
 
-		helpers.authenticateUser(auth, users, true)
+		helpers.verifyUser(auth, users, true)
 
 		.then(function(data){
 
@@ -421,10 +427,10 @@ function Accounts(app)
 
 		var auth = {
 			username: req.session.username,
-			password: req.session.password
+			token: req.session.token
 		}
 
-		helpers.authenticateUser(auth, users, false)
+		helpers.verifyUser(auth, users, false)
 
 		.then(function(data){
 

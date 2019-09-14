@@ -16,62 +16,103 @@ exports.saltAndHash = function(pw)
 	return p;
 }
 
-exports.authenticateUser = function(ud,db,requireAdmin)
+
+
+exports.authenticateUser = function(ud,db) //this is for the first login token gets generated
+{
+	return new Promise(function(resolve, reject)
+	{
+		db.findOne({username: ud.username}).then((doc)=>
+		{
+			if(doc != null)
+			{
+				pwhasher(ud.password).verifyAgainst(doc.hash, function(error, verified)
+				{
+					if(verified)
+					{
+						var token = exports.generateToken();
+						db.findOneAndUpdate(doc._id, {$set: {token: token}})
+
+						.then(_=>
+						{
+							resolve({valid: true, info:"User authenicated", role: doc.role, _id: doc._id, token: token});
+						})
+					}
+					else
+					{
+						resolve({valid: false, info:"Incorrect password"});
+					}
+
+				});
+
+			}
+			else
+			{
+				//check there are any admins at all
+				db.findOne({}).then((doc) =>
+				{
+					if(doc == null)
+					{
+						resolve({valid: false, info:"Database is empty"});
+					}
+					else
+					{
+						resolve({valid: false, info: "Invalid user id"});
+					}
+				})
+			}
+		});
+	});
+}
+
+
+exports.verifyUser = function(ud,db,requireAdmin)
 {
 
-	var p = new Promise(function(resolve, reject){
+	return new Promise(function(resolve, reject)
+	{
 
 		db.findOne({username: ud.username})
 		.then((doc) =>
+		{
+			if(doc != null)
 			{
-				if(doc != null)
+				if(doc.token == ud.token)
 				{
-					pwhasher(ud.password).verifyAgainst(doc.hash, function(error, verified)
+					if(!requireAdmin || doc.role == "admin")
 					{
-
-						if(verified)
-						{
-							if(!requireAdmin || doc.role == "admin")
-							{
-								resolve({valid: true, info:"User authenicated", role: doc.role, _id: doc._id});
-							}
-							else
-							{
-								resolve({valid: false, info:"User is not admin"});
-							}
-						}
-						else
-						{
-							resolve({valid: false, info:"Incorrect password"});
-						}
-
-					})
-
+						resolve({valid: true, info:"User authenicated", role: doc.role, _id: doc._id});
+					}
+					else
+					{
+						resolve({valid: false, info:"User is not admin"});
+					}
 				}
 				else
 				{
-					//check there are any admins at all
-					db.findOne({})
-					.then(
-						(doc) =>
-						{
-							if(doc == null)
-							{
-								resolve({valid: false, info:"Database is empty"});
-							}
-							else
-							{
-								resolve({valid: false, info: "Invalid user id"});
-							}
-						}
-					)
+					resolve({valid: false, info:"Invalid token"});
 				}
 			}
-		)
+			else
+			{
+				//check there are any admins at all
+				db.findOne({})
+				.then(
+					(doc) =>
+					{
+						if(doc == null)
+						{
+							resolve({valid: false, info:"Database is empty"});
+						}
+						else
+						{
+							resolve({valid: false, info: "Invalid user id"});
+						}
+					}
+				)
+			}
+		})
 	})
-
-	return p;
-
 }
 
 exports.authenticateForClass = function(user, class_id)
@@ -82,7 +123,7 @@ exports.authenticateForClass = function(user, class_id)
 
 		var role;
 
-		exports.authenticateUser(user, users, false)
+		exports.verifyUser(user, users, false)
 
 		.then(function(data){
 

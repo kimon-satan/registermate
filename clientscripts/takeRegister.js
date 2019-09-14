@@ -232,15 +232,39 @@ $(document).ready(function()
 			fn = fn.replace(/[-\:\;"\,\'\|]/g, "");
 			fn = fn.replace(/\s/g, "_");
 
-			var csvContent = "data:text/csv;charset=utf-8," + res;
-			var encodedUri = encodeURI(csvContent);
-			var link = document.createElement("a");
-			link.setAttribute("href", encodedUri);
-			link.setAttribute("download", fn);
-			link.click();
+			var csvContent = "data:text/csv;charset=utf-8," + encodeURI(csvContent);
+			//window.location.href = csvContent;
+			saveAs(csvContent, fn);
+
 		})
 	})
 
+
+function saveAs(uri, filename)
+{
+	//Thankyou stackoverflow !
+	var link = document.createElement('a');
+
+	if (typeof link.download === 'string')
+	{
+		link.href = uri;
+		link.download = filename;
+
+		//Firefox requires the link to be in the body
+		document.body.appendChild(link);
+
+		//simulate click
+		link.click();
+
+		//remove the link when done
+		document.body.removeChild(link);
+	}
+	else
+	{
+		//Firefox workaround
+		window.open(uri);
+	}
+}
 
 
 	$(document).on("click",".attendance",function(e){

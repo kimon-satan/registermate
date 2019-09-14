@@ -19,6 +19,7 @@ const PORT = 8000;
 if(argv.local)
 {
 	global.URL = "http://localhost:8000"
+	global.isLocal = true;
 }
 else
 {
@@ -69,13 +70,17 @@ hbs.registerPartials(__dirname + '/templates');
 
 app.transporter = "";
 
-		// init reusable transporter object using the default SMTP transport
-app.transporter = nodemailer.createTransport({
-	host: 'igor.gold.ac.uk', //we should now be able to email igor accounts
-	port: 25,
-	secure: false, // true for 465, false for other ports
-    	tls: {rejectUnauthorized: false}
-});
+if(!argv.local)
+{
+	// init reusable transporter object using the default SMTP transport
+	app.transporter = nodemailer.createTransport({
+		host: 'igor.gold.ac.uk', //we should now be able to email igor accounts
+		port: 25,
+		secure: false, // true for 465, false for other ports
+	    	tls: {rejectUnauthorized: false}
+	});
+
+}
 
 app.use("/libs",express.static(__dirname + '/libs'));
 app.use("/clientscripts",express.static(__dirname + '/clientscripts'));
@@ -113,30 +118,29 @@ app.get('/student', (req, res) =>
 	}
 })
 app.get('/teacher', (req, res) =>
+{
+	if (req.session.username != null && req.session.token != null)
 	{
-		if (req.session.username != null && req.session.password != null)
-		{
-				// Already logged in.
-				if(req.session.role == "teacher")
-				{
-					res.render(__dirname + '/templates/teacherMenu.hbs', {SERVER_URL: URL});
-				}
-				else
-				{
-					res.render(__dirname + '/templates/adminMenu.hbs', {SERVER_URL: URL});
-				}
-		}
-		else
-		{
-			res.render(__dirname + '/templates/login.hbs', {SERVER_URL: URL});
-		}
+			// Already logged in.
+			if(req.session.role == "teacher")
+			{
+				res.render(__dirname + '/templates/teacherMenu.hbs', {SERVER_URL: URL});
+			}
+			else
+			{
+				res.render(__dirname + '/templates/adminMenu.hbs', {SERVER_URL: URL});
+			}
 	}
-)
+	else
+	{
+		res.render(__dirname + '/templates/login.hbs', {SERVER_URL: URL});
+	}
+})
 
 
 app.get('/createclass', (req, res) =>
 {
-	if (req.session.username != null && req.session.password != null)
+	if (req.session.username != null && req.session.token != null)
 	{
 		res.render(__dirname + '/templates/createClass.hbs', {SERVER_URL: URL});
 	}
@@ -148,7 +152,7 @@ app.get('/createclass', (req, res) =>
 
 app.get('/editclass' , (req, res) => {
 
-	if (req.session.username != null && req.session.password != null)
+	if (req.session.username != null && req.session.token != null)
 	{
 		if(req.query._id)
 		{
