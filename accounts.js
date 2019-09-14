@@ -47,6 +47,7 @@ function Accounts(app)
 				firstname: req.body.firstname,
 				surname:req.body.surname,
 				hash: data,
+				token: generateToken,
 				role: "teacher",
 				classes: [],
 				email: req.body.email,
@@ -86,11 +87,11 @@ function Accounts(app)
 
 		.then((doc)=>{
 
-			if(!req.session.username && !req.session.password)
+			if(!req.session.username && !req.session.token)
 			{
 				//if not logged in then login and redirect ...
 				req.session.username = ud.username;
-				req.session.password = req.body.password1;
+				req.session.token = ud.token;
 				req.session.role = ud.role;
 				req.session._id = doc._id;
 				res.redirect(URL + '/teacher');
