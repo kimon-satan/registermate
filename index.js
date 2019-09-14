@@ -13,17 +13,18 @@ const classManager = require('./classmanager.js');
 const registerManager = require('./registermanager.js');
 const argv = require('yargs').argv;
 
-//const PORT = 80;
-const PORT = 8000;
+
 
 if(argv.local)
 {
 	global.URL = "http://localhost:8000"
 	global.isLocal = true;
+	const PORT = 8000;
 }
 else
 {
 	global.URL = "http://rm.doc.gold.ac.uk";
+	const PORT = 80;
 }
 
 //global.URL = "http://www.doc.gold.ac.uk/www/275"
