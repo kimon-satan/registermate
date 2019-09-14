@@ -719,7 +719,7 @@ function RegisterManager(app)
 			{
 
 
-				var r = /(\d{3})\.(\d{3})\..*/;
+				var r = /(\d{1,3})\.(\d{1,3})\.\d{1,3}\.\d{1,3}/;
 				var m = r.exec(ip);
 				r.lastIndex = 0;
 				var m2 = r.exec(doc.ip);
