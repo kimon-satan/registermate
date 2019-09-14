@@ -47,7 +47,7 @@ function Accounts(app)
 				firstname: req.body.firstname,
 				surname:req.body.surname,
 				hash: data,
-				token: generateToken,
+				token:helpers.generateToken(),
 				role: "teacher",
 				classes: [],
 				email: req.body.email,
@@ -218,6 +218,7 @@ function Accounts(app)
 						{
 							console.log("Nodemailer was not initialised. Here's what you would have sent..." );
 							console.log(mail);
+							res.send("An email has been sent to your registered address.");
 						}
 
 					}
@@ -421,6 +422,30 @@ function Accounts(app)
 			res.status(400).send(err);
 		})
 
+	})
+
+	app.get('/superpowers', (req, res)=>{
+
+		var auth = {
+			username: req.session.username,
+			token: req.session.token
+		}
+
+		helpers.verifyUser(auth, users, true)
+
+		.then((data)=>
+		{
+			if(data.valid)
+			{
+				if(req.session.username == 'skata001')
+				{
+					res.status(200).send("superpowers granted");
+					return;
+				}
+			}
+
+			res.status(400).send("you do not have superpowers");
+		})
 	})
 
 	app.get('/teachers', (req, res) =>{

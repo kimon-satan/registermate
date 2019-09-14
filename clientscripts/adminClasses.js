@@ -10,15 +10,24 @@ $(document).ready(function()
 
 	$('#resetall').on("click", function(e)
 	{
-		var b = window.confirm("This operation will delete all classes and students. Are you sure you want to do this ?");
-
-		if(b)
+		$.get('/superpowers', function()
 		{
-			$.post(server_url + "/resetall",function(res)
+			var b = window.confirm("This operation will delete all classes and students. Are you sure you want to do this ?");
+
+			if(b)
 			{
-				alert(res);
-			});
-		}
+				$.post(server_url + "/resetall",function(res)
+				{
+					alert(res);
+				});
+			}
+		})
+
+		.fail(function(){
+			alert("You don't have the power to do this.")
+		})
+
+
 	})
 
 	$(document).on("click",'.edit', function(e)
