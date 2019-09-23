@@ -637,7 +637,7 @@ function RegisterManager(app)
 
 			if(doc == null)
 			{
-				return Promise.reject("I can't find a student with that login");
+				return Promise.reject("I can't find a student with that login.");
 			}
 			else if(doc.currentclass == null || doc.currentclass == undefined || doc.currentclass == '')
 			{
