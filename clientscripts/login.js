@@ -15,6 +15,7 @@ $('#submit').on('click', function(e){
 	)
 
 	req.fail(function(res){
+
 		alert(res.responseText);
 	})
 

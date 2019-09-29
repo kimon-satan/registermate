@@ -1,5 +1,6 @@
 $(document).ready(function()
 {
+	var errorMessage = false;
 	$('#register').on('click', function(e)
 	{
 		e.preventDefault();
@@ -7,6 +8,7 @@ $(document).ready(function()
 		var r = /([a-z]{2,7}\d{0,4}[a-z]{0,3})/gi;
 
 		var a = $("<p>Something not right ? Report a problem <a href='https://learn.gold.ac.uk/mod/questionnaire/view.php?id=715371'>here</a></p>");
+
 
 		if(r.test(un))
 		{
@@ -19,16 +21,25 @@ $(document).ready(function()
 				if(res.responseText)
 				{
 					alert(res.responseText);
-					$('#student').append(a);
 				}
 				else{
 					alert(res);
+				}
+
+				if(!errorMessage)
+				{
 					$('#student').append(a);
+					errorMessage = true;
 				}
 			})
 		}
 		else{
 			alert("That doesn't look like a campus login.");
+			if(!errorMessage)
+			{
+				$('#student').append(a);
+				errorMessage = true;
+			}
 		}
 
 

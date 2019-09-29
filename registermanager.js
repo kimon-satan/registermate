@@ -62,7 +62,7 @@ function RegisterManager(app)
 	app.post('/changecurrentsession', (req,res) =>
 	{
 
-		console.log(req.body);
+		//console.log(req.body);
 
 		var auth = {
 			username: req.session.username,
@@ -96,7 +96,7 @@ function RegisterManager(app)
 			token: req.session.token
 		}
 
-		console.log(req.body, auth);
+		//console.log(req.body, auth);
 
 		helpers.authenticateForClass(auth, req.body.class)
 
@@ -216,15 +216,20 @@ function RegisterManager(app)
 		.then((docs)=>
 		{
 
-			docs.forEach(function(item){
+			docs.forEach(function(item)
+			{
+
 				//destroy session
 				if(item.session_id)
 				{
 					global.sessionstore.destroy(item.session_id,function(error){
 						//console.log(error)
 					});
-					students.update(item._id, {$set: {session_id: null, currentclass: null}});
 				}
+
+				//reset the student record
+				students.update(item._id, {$set: {session_id: null, currentclass: null}});
+
 			})
 
 		})
@@ -715,22 +720,13 @@ function RegisterManager(app)
 
 			classDoc = doc;
 
-			if(classDoc.ipblock)
-			{
+			//console.log(classDoc);
 
-
-				var r = /(\d{1,3})\.(\d{1,3})\.\d{1,3}\.\d{1,3}/;
-				var m = r.exec(ip);
-				r.lastIndex = 0;
-				var m2 = r.exec(doc.ip);
-
-				if(m[1] != m2[1] || m[2] != m2[2])
-				{
-					console.log("ip rejected: ", ip, doc.ip);
-					return Promise.reject("You are logging in from an invalid location. Consult your class teacher.");
-				}
-
-			}
+			var r = /(\d{1,3})\.(\d{1,3})\.\d{1,3}\.\d{1,3}/;
+			var m = r.exec(ip);
+			r.lastIndex = 0;
+			var m2 = r.exec(doc.ip);
+			var ipMismatch = (m[1] != m2[1] || m[2] != m2[2]);
 
 			if(doc == null)
 			{
@@ -743,6 +739,11 @@ function RegisterManager(app)
 			else if(doc.classpass != req.body.classpass)
 			{
 				return Promise.reject("The password is incorrect");
+			}
+			else if(classDoc.ipblock == 'true' && ipMismatch)
+			{
+				console.log("ip rejected: ", ip, doc.ip);
+				return Promise.reject("You are logging in from an invalid location. Consult your class teacher.");
 			}
 			else
 			{
