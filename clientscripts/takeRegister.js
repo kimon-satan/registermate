@@ -228,12 +228,16 @@ $(document).ready(function()
 		},
 		function(res)
 		{
+
+			console.log(res);
 			var fn = classDoc.classname + "_" + classDoc.currentsession + ".csv";
 			fn = fn.replace(/[-\:\;"\,\'\|]/g, "");
 			fn = fn.replace(/\s/g, "_");
 
-			var csvContent = "data:text/csv;charset=utf-8," + encodeURI(csvContent);
+			var csvContent = "data:text/csv;charset=utf-8," + encodeURI(res);
 			//window.location.href = csvContent;
+
+			//console.log(csvContent);
 			saveAs(csvContent, fn);
 
 		})
