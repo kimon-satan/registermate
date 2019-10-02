@@ -137,7 +137,11 @@
 		{"code": "IS74023A", "title": "ADVANCED MODELLING AND ANIMATION"},
 		{"code": "IS74023B", "title": "ADVANCED MODELLING AND ANIMATION"},
 		{"code": "IS74024A", "title": "HISTORY OF COMPUTER GAMES, ART AND ANIMATION"},
-		{"code": "IS741019A", "title": "GAMES AND ENTERTAINMENT INDUSTRIES: FINAL PROJECT"}
+		{"code": "IS741019A", "title": "GAMES AND ENTERTAINMENT INDUSTRIES: FINAL PROJECT"},
+		{"code": "IS71090A", "title": "Computing The User Experience (2019-20)"},
+		{"code": "IS71091A", "title": "Introduction to Research Methods (2019-20)"},
+		{"code": "IS71092A", "title": "Interaction Science (2019-20)"},
+		{"code": "IS71093A", "title": "Applied Topics / Guest Lectures (2019-20)"}
 		]
 	},
 	"Art": {"modules": [
